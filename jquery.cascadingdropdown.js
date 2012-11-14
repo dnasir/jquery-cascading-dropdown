@@ -1,9 +1,15 @@
 ﻿/* 
-    jQuery Cascading Dropdown Plugin
-    Author: Dzulqarnain Nasir
-    https://github.com/dzul/jquery-cascading-dropdown
-*/
-; (function ($, window, document, undefined) {
+ *   jQuery Cascading Dropdown Plugin 1.0
+ *   https://github.com/dzul/jquery-cascading-dropdown
+ *
+ *   Copyright 2012, Dzulqarnain Nasir
+ *   http://dnasir.com
+ *
+ *   Licensed under the MIT license:
+ *   http://www.opensource.org/licenses/MIT
+ */
+
+; (function ($, undefined) {
     $.fn.cascadingDropdown = function (o) {
         return this.each(function () {
             var defaults = {
@@ -107,4 +113,4 @@
             });
         });
     };
-})(jQuery, window, document)
+})(jQuery);
