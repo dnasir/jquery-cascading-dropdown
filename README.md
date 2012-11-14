@@ -10,18 +10,61 @@ Include script after the jQuery library (unless you are packaging scripts someho
 <script type="text/javascript" src="/path/to/jquery-cascading-dropdown.js"></script>
 ```
 
-## Input parameters
+## Options
 
-* selectBoxes: Array of select box objects
-* Select box object properties:
-  * (string) selector: Selector for select box inside parent container. (Required)
-  * (string) url: Url to be used in Ajax request for fetching select box items. (Required)
-  * (string) textKey: The key to be used when parsing Ajax data for select box item text. (Required)
-  * (string) valueKey: The key to be used when parsing Ajax data for select box item value. (Required)
-  * (array) requires: Array of select boxes required to have value before fetching own list.
-  * (boolean) requireAll: If set to true, all select boxes defined in the requires array must have a value before fetching own list.
-  * (string) paramName: Required select box value parameter name used in Ajax request when fetching own list.
-  * (function) onChange: Function to be executed when select box value is changed. Provides new select box value.
+#### selectBoxes
+
+Array of select box objects
+
+#### Select box object properties
+
+##### selector (string)
+
+    selector: '.selectbox1'
+
+Selector for select box inside parent container. (Required)
+
+##### url (string)
+
+    url: '/api/CompanyInfo/GetCountries'
+
+Url to be used in Ajax request for fetching select box items. (Required)
+
+##### textKey (string)
+
+    textKey: 'text'
+
+The key to be used when parsing Ajax data for select box item text. (Required)
+
+##### valueKey (string)
+
+    valueKey: 'value'
+
+The key to be used when parsing Ajax data for select box item value. (Required)
+
+##### requires (array)
+
+    requires: ['.selectbox1']
+
+Array of select boxes required to have value before fetching own list.
+
+##### requireAll (boolean)
+
+    requireAll: true
+
+If set to true, all select boxes defined in the requires array must have a value before fetching own list.
+
+##### paramName (string)
+
+    paramName: 'countryId'
+
+Required select box value parameter name used in Ajax request when fetching own list.
+
+##### onChange (function)
+
+    onChange: function(value) { doSomething(value); }
+
+Function to be executed when select box value is changed. Provides new select box value.
 
 ## Example usage
 
