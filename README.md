@@ -99,3 +99,30 @@ $('#menu-filter').cascadingDropdown({
     ]
 });
 ```
+
+## Server-side implementation
+
+This plugin uses Ajax to request for the list of option items to be inserted into the select boxes. 
+So you'll need a web service that returns a specific type of data, and in this case, a JSON array.
+
+Notice how there are two properties called textKey and valueKey. The values of these two properties are
+used to determine which property of the JSON array object should be used for the option text and which one
+should be used for the value. So if you have something like this in your select box object property:
+
+    textKey: 'text',
+    valueKey: 'value'
+
+Your JSON object should look something like this:
+
+```json
+[
+    {
+        "text": "Malaysia",
+        "value": "60"
+    },
+    {
+        "text": "Latvia",
+        "value": "371"
+    }
+]
+```
