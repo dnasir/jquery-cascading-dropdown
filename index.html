@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>jQuery Cascading Dropdown Plugin Examples</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+
+        <!-- Stylesheets here -->
+	</head>
+	<body>
+		<h1>jQuery Cascading Dropdown Plugin Examples</h1>
+		<!-- Content here -->
+
+		<h2>Simple</h2>
+		<p>In this example, Step 2 is dependent on Step 1 having a value. Step 3 is dependent on either one of Step 1 and Step 2 having a value.</p>
+		<div id="example1">
+			<select class="step1">
+				<option value="0">Step 1</option>
+				<option>Option1</option>
+				<option>Option2</option>
+				<option>Option3</option>
+				<option>Option4</option>
+			</select>
+			<select class="step2">
+				<option value="0">Step 2</option>
+				<option>Option5</option>
+				<option>Option6</option>
+				<option>Option7</option>
+				<option>Option8</option>
+			</select>
+			<select class="step3">
+				<option value="0">Step 3</option>
+				<option>Option9</option>
+				<option>Option10</option>
+				<option>Option11</option>
+				<option>Option12</option>
+			</select>
+		</div>
+		<div>
+			<pre>
+$('#example1').cascadingDropdown({
+	selectBoxes: [
+		{
+			selector: '.step1'
+		},
+		{
+			selector: '.step2',
+			requires: ['.step1']
+		},
+		{
+			selector: '.step3',
+			requires: ['.step1', '.step2']
+		}
+	]
+});
+			</pre>
+		</div>
+
+		<!-- Scripts here -->
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+		<script type="text/javascript" src="jquery.cascadingdropdown.js"></script>
+		<script type="text/javascript">
+			$(document).ready(function(){
+				$('#example1').cascadingDropdown({
+					selectBoxes: [
+						{
+							selector: '.step1'
+						},
+						{
+							selector: '.step2',
+							requires: ['.step1']
+						},
+						{
+							selector: '.step3',
+							requires: ['.step1', '.step2']
+						}
+					]
+				});
+			});
+		</script>
+	</body>
+</html>

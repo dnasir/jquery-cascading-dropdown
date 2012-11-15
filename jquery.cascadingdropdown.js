@@ -28,19 +28,21 @@
                 for (var j = 0; j < selectListItems.length; j++) {
                     optionsList += '<option value="' + selectListItems[j].value + '">' + selectListItems[j].text + '</option>';
                 }
-                selectBox.children('option:not([value="0"])').remove();
+                selectBox.children('option:not(:first)').remove();
                 selectBox.append(optionsList);
             }
 
             function buildSelectListItems(data, textKey, valueKey) {
                 var result = [];
-                for (var i = 0; i < data.length; i++) {
-                    var item = data[i];
-                    var selectItem = {
-                        text: item[textKey],
-                        value: item[valueKey]
-                    };
-                    result.push(selectItem);
+                if(data && textKey && valueKey){
+                    for (var i = 0; i < data.length; i++) {
+                        var item = data[i];
+                        var selectItem = {
+                            text: item[textKey],
+                            value: item[valueKey]
+                        };
+                        result.push(selectItem);
+                    }
                 }
                 return result;
             }
@@ -77,27 +79,40 @@
 
                     requiredSelectBoxes.on('change', function () {
                         var requirementsMet = true;
+
                         $.each(requiredSelectBoxes, function () {
                             var className = '.' + this.className;
                             var changedSelectBoxObject = $.grep(options.selectBoxes, function (e) { return e.selector == className; })[0];
 
-                            if (step.requireAll && (!this.value || this.value == '0')) {
-                                requirementsMet = false;
-                                ajaxData[changedSelectBoxObject.paramName] = 0;
-                                return true;
+                            if(changedSelectBoxObject.paramName){
+                                ajaxData[changedSelectBoxObject.paramName] = this.value;
                             }
-
-                            ajaxData[changedSelectBoxObject.paramName] = this.value;
                         });
+                        
+                        if(step.requireAll){
+                            requirementsMet = (requiredSelectBoxes.filter(function(){
+                                var requiredSelectBox = $(this);
+                                return requiredSelectBox.val() != requiredSelectBox.find(':first').val();
+                            }).length == requiredSelectBoxes.length);
+                        } else {
+                            requirementsMet = (requiredSelectBoxes.filter(function(){
+                                var requiredSelectBox = $(this);
+                                return (requiredSelectBox.val() != requiredSelectBox.find(':first').val());
+                            }).length > 0);
+                        }
 
                         if (requirementsMet) {
-                            getSelectListItems(step.url, ajaxData, function(data) {
-                                var selectListItems = buildSelectListItems(data, step.textKey, step.valueKey);
-                                populateSelectBox(stepEl, selectListItems);
+                            if(step.url && step.textKey && step.valueKey){
+                                getSelectListItems(step.url, ajaxData, function(data) {
+                                    var selectListItems = buildSelectListItems(data, step.textKey, step.valueKey);
+                                    populateSelectBox(stepEl, selectListItems);
+                                    stepEl.removeAttr('disabled');
+                                }, function() {
+                                    stepEl.attr('disabled', 'disabled');
+                                });
+                            } else {
                                 stepEl.removeAttr('disabled');
-                            }, function() {
-                                stepEl.attr('disabled', 'disabled');
-                            });
+                            }
                         } else {
                             stepEl.attr('disabled', 'disabled');
                         }
