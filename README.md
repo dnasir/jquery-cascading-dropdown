@@ -28,31 +28,35 @@ Selector for select box inside parent container. (Required)
 
     url: '/api/CompanyInfo/GetCountries'
 
-Url to be used in Ajax request for fetching select box items. (Required)
+Url to be used in Ajax request for fetching select box items. If this parameter is set,
+the textKey and valueKey parameters must also be set.
+
+If this parameter is not set, the plugin will simply enable the select box.
 
 ##### textKey (string)
 
     textKey: 'text'
 
-The key to be used when parsing Ajax data for select box item text. (Required)
+The key to be used when parsing Ajax data for select box item text. (Required if url is set)
 
 ##### valueKey (string)
 
     valueKey: 'value'
 
-The key to be used when parsing Ajax data for select box item value. (Required)
+The key to be used when parsing Ajax data for select box item value. (Required if url is set)
 
 ##### requires (array)
 
     requires: ['.selectbox1']
 
-Array of select boxes required to have value before fetching own list.
+Array of select box selectors required to have value before fetching own list.
 
 ##### requireAll (boolean)
 
     requireAll: true
 
-If set to true, all select boxes defined in the requires array must have a value before fetching own list.
+If set to true, all select boxes defined in the requires array must have a value before this particular
+select box is enabled, and own list is requested if the url parameter is set.
 
 ##### paramName (string)
 
