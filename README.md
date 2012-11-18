@@ -113,20 +113,20 @@ Notice how there are two properties called textKey and valueKey. The values of t
 used to determine which property of the JSON array object should be used for the option text and which one
 should be used for the value. So if you have something like this in your select box object property:
 
-    textKey: 'text',
-    valueKey: 'value'
+    textKey: 'country',
+    valueKey: 'countrycode'
 
 Your JSON object should look something like this:
 
 ```json
 [
     {
-        "text": "Malaysia",
-        "value": "60"
+        "country": "Malaysia",
+        "countrycode": "60"
     },
     {
-        "text": "Latvia",
-        "value": "371"
+        "country": "Latvia",
+        "countrycode": "371"
     }
 ]
 ```
