@@ -19,14 +19,18 @@
             var el = $(this);
             var options = $.extend(defaults, o);
 
-            function populateSelectBox(selectBox, selectListItems) {
+            function populateSelectBox(selectBox, selectListItems, defaultKey) {
                 if (!selectListItems.length) {
                     return;
                 }
 
                 var optionsList = '';
                 for (var j = 0; j < selectListItems.length; j++) {
-                    optionsList += '<option value="' + selectListItems[j].value + '">' + selectListItems[j].text + '</option>';
+                    var defaultAttribute = ''; 
+                	if (selectListItems[j].value == defaultKey) {
+                		var defaultAttribute = ' selected="selected"'; 
+                	}
+                    optionsList += '<option value="' + selectListItems[j].value + '"' + defaultAttribute + '>' + selectListItems[j].text + '</option>';
                 }
                 selectBox.children('option:not(:first)').remove();
                 selectBox.append(optionsList);
@@ -105,7 +109,7 @@
                             if(step.url && step.textKey && step.valueKey){
                                 getSelectListItems(step.url, ajaxData, function(data) {
                                     var selectListItems = buildSelectListItems(data, step.textKey, step.valueKey);
-                                    populateSelectBox(stepEl, selectListItems);
+                                    populateSelectBox(stepEl, selectListItems, step.defaultKey);
                                     stepEl.removeAttr('disabled');
                                 }, function() {
                                     stepEl.attr('disabled', 'disabled');
@@ -121,7 +125,7 @@
                     getSelectListItems(step.url, null, function (data) {
                         if (data != null) {
                             var selectListItems = buildSelectListItems(data, step.textKey, step.valueKey);
-                            populateSelectBox(stepEl, selectListItems);
+                            populateSelectBox(stepEl, selectListItems, step.defaultKey);
                         }
                     });
                 }
