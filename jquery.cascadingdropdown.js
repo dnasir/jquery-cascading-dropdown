@@ -81,7 +81,8 @@
                         var requirementsMet = true;
 
                         $.each(requiredSelectBoxes, function () {
-                            var className = '.' + this.className;
+                            //Fix to allow dropdown on input with more than one class, the first one needs to be the same as the selector
+                            var className = '.' + this.className.split(' ')[0]; 
                             var changedSelectBoxObject = $.grep(options.selectBoxes, function (e) { return e.selector == className; })[0];
 
                             if(changedSelectBoxObject.paramName){
