@@ -81,8 +81,10 @@
                         var requirementsMet = true;
 
                         $.each(requiredSelectBoxes, function () {
-                            var className = '.' + this.className;
-                            var changedSelectBoxObject = $.grep(options.selectBoxes, function (e) { return e.selector == className; })[0];
+                            var selectBox = this;
+                            var changedSelectBoxObject = $.grep(options.selectBoxes, function (e) { 
+                                return $(selectBox).hasClass(e.selector.replace(".","")); 
+                            })[0];
 
                             if(changedSelectBoxObject.paramName){
                                 ajaxData[changedSelectBoxObject.paramName] = this.value;
