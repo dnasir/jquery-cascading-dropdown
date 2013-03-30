@@ -1,5 +1,5 @@
 ﻿/* 
- *   jQuery Cascading Dropdown Plugin 1.0
+ *   jQuery Cascading Dropdown Plugin 1.0.1
  *   https://github.com/dzul/jquery-cascading-dropdown
  *
  *   Copyright 2012, Dzulqarnain Nasir
@@ -81,9 +81,9 @@
                         var requirementsMet = true;
 
                         $.each(requiredSelectBoxes, function () {
-                            var selectBox = this;
+                            var selectBox = $(this);
                             var changedSelectBoxObject = $.grep(options.selectBoxes, function (e) { 
-                                return $(selectBox).hasClass(e.selector.replace(".","")); 
+                                return selectBox.hasClass(e.selector.replace('.',''));
                             })[0];
 
                             if(changedSelectBoxObject.paramName){
