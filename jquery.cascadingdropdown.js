@@ -1,8 +1,8 @@
 ﻿/* 
- *   jQuery Cascading Dropdown Plugin 1.0.2
+ *   jQuery Cascading Dropdown Plugin 1.1.0
  *   https://github.com/dzul/jquery-cascading-dropdown
  *
- *   Copyright 2012, Dzulqarnain Nasir
+ *   Copyright 2013, Dzulqarnain Nasir
  *   http://dnasir.com
  *
  *   Licensed under the MIT license:
@@ -12,127 +12,115 @@
 (function ($, undefined) {
     'use strict';
 
-    $.fn.cascadingDropdown = function (o) {
-        return this.each(function () {
-            var defaults = {
-                selectBoxes: []
-            };
+    // constructor
+    function dropdown(options, parent){
+        this.el = $(options.selector);
+        this.options = options;
+        this.requiredDropdowns = options.requires && options.requires.length ? $(options.requires.join(','), parent) : null;
+        this.requirementsMet = true;
+        this.originalOptions = this.el.children('option');
+        this.init();
+    }
 
-            var el = $(this);
-            var options = $.extend(defaults, o);
-
-            function populateSelectBox(selectBox, selectListItems, defaultKey) {
-                if (!selectListItems.length) {
-                    return;
-                }
-
-                var optionsList = '';
-                for (var j = 0; j < selectListItems.length; j++) {
-                    var defaultAttribute = ''; 
-                	if (selectListItems[j].value == defaultKey) {
-                		var defaultAttribute = ' selected="selected"'; 
-                	}
-                    optionsList += '<option value="' + selectListItems[j].value + '"' + defaultAttribute + '>' + selectListItems[j].text + '</option>';
-                }
-                selectBox.children('option:not(:first)').remove();
-                selectBox.append(optionsList);
+    // methods
+    dropdown.prototype = {
+        init: function(){
+            if(typeof this.options.onChange === 'function'){
+                this.el.on('change', $.proxy(function(){
+                    this.options.onChange.call(this, this.el.val());
+                }, this));
             }
 
-            function buildSelectListItems(data, textKey, valueKey) {
-                var result = [];
-                if(data && textKey && valueKey){
-                    for (var i = 0; i < data.length; i++) {
-                        var item = data[i];
-                        var selectItem = {
-                            text: item[textKey],
-                            value: item[valueKey]
-                        };
-                        result.push(selectItem);
-                    }
-                }
-                return result;
+            if(this.requiredDropdowns){
+                this.requiredDropdowns.on('change', $.proxy(function(){
+                    this.checkRequirements();
+                }, this));
             }
 
-            function getSelectListItems(url, ajaxData, successFn, noResultFn) {
-                $.getJSON(url, ajaxData, function (data) {
-                    if (data != null && data.length > 0) {
-                        if (typeof successFn === 'function') {
-                            successFn(data);
-                        }
-                    } else {
-                        if(typeof noResultFn === 'function') {
-                            noResultFn();
-                        }
+            this.checkRequirements();
+        },
+
+        enable: function(){
+            this.el.removeAttr('disabled');
+        },
+
+        disable: function(){
+            this.el.attr('disabled', 'disabled');
+        },
+
+        checkRequirements: function(){
+            if(this.requiredDropdowns){
+                if(this.options.requireAll){
+                    this.requirementsMet = this.requiredDropdowns.filter(function(){
+                        return !!$(this).val();
+                    }).length == this.options.requires.length;
+                } else {
+                    this.requirementsMet = this.requiredDropdowns.filter(function(){
+                        return !!$(this).val();
+                    }).length > 0;
+                }
+            }
+
+            if(this.requirementsMet){
+                this.fetchList();
+                this.enable();
+            } else {
+                this.disable();
+            }
+        },
+
+        fetchList: function(){
+            if(!this.options.url){
+                return;
+            }
+
+            if(!this.options.textKey || !this.options.valueKey){
+                $.error('Insufficient parameters');
+            }
+
+            var ajaxData = {};
+
+            if(this.requiredDropdowns){
+                $.each(this.requiredDropdowns, function(){
+                    var instance = $(this).data('plugin_cascadingDropdown');
+                    if(instance.options.paramName){
+                        ajaxData[instance.options.paramName] = instance.el.val();
                     }
                 });
             }
+            
+            $.ajax({
+                url: this.options.url,
+                data: ajaxData,
+                type: this.options.usePost ? 'post' : 'get',
 
-            $.each(options.selectBoxes, function () {
-                var step = this;
-                var stepEl = $(step.selector);
+                success: $.proxy(function(data){
+                    this.el.children('option').remove();
+                    this.el.append(this.originalOptions);
 
-                if (typeof step.onChange === 'function') {
-                    stepEl.on('change', function () {
-                        step.onChange(this.value);
-                    });
-                }
-
-                if (step.requires && step.requires.length) {
-                    stepEl.attr('disabled', 'disabled');
-
-                    var requiredSelectBoxes = $(step.requires.join(','), el);
-                    var ajaxData = {};
-
-                    requiredSelectBoxes.on('change', function () {
-                        var requirementsMet = true;
-
-                        $.each(requiredSelectBoxes, function () {
-                            var selectBox = $(this);
-                            var changedSelectBoxObject = $.grep(options.selectBoxes, function (e) { 
-                                return selectBox.hasClass(e.selector.replace('.',''));
-                            })[0];
-
-                            if(changedSelectBoxObject.paramName){
-                                ajaxData[changedSelectBoxObject.paramName] = this.value;
-                            }
-                        });
-                        
-                        if(step.requireAll){
-                            requirementsMet = (requiredSelectBoxes.filter(function(){
-                                var requiredSelectBox = $(this);
-                                return requiredSelectBox.val() != requiredSelectBox.find(':first').val();
-                            }).length == requiredSelectBoxes.length);
-                        } else {
-                            requirementsMet = (requiredSelectBoxes.filter(function(){
-                                var requiredSelectBox = $(this);
-                                return (requiredSelectBox.val() != requiredSelectBox.find(':first').val());
-                            }).length > 0);
+                    $.each(data, $.proxy(function(index, item){
+                        if(!item[this.options.textKey] || !item[this.options.valueKey]){
+                            return true;
                         }
 
-                        if (requirementsMet) {
-                            if(step.url && step.textKey && step.valueKey){
-                                getSelectListItems(step.url, ajaxData, function(data) {
-                                    var selectListItems = buildSelectListItems(data, step.textKey, step.valueKey);
-                                    populateSelectBox(stepEl, selectListItems, step.defaultKey);
-                                    stepEl.removeAttr('disabled');
-                                }, function() {
-                                    stepEl.attr('disabled', 'disabled');
-                                });
-                            } else {
-                                stepEl.removeAttr('disabled');
-                            }
-                        } else {
-                            stepEl.attr('disabled', 'disabled');
+                        var defaultAttr = '';
+                        if(this.options.defaultValue == item[this.options.valueKey]){
+                            defaultAttr = ' selected="selected"';
                         }
-                    });
-                } else {
-                    getSelectListItems(step.url, null, function (data) {
-                        if (data != null) {
-                            var selectListItems = buildSelectListItems(data, step.textKey, step.valueKey);
-                            populateSelectBox(stepEl, selectListItems, step.defaultKey);
-                        }
-                    });
-                }
+
+                        this.el.append('<option value="' + item[this.options.valueKey] + '"' + defaultAttr + '>' + item[this.options.textKey] + '</option>');
+                    }, this));
+                }, this)
+            })
+        }
+    };
+
+    // jQuery plugin declaration
+    $.fn.cascadingDropdown = function(options){
+        return this.each(function(){
+            var parent = this;
+            $.each(options.selectBoxes, function(){
+                $(this.selector).data('plugin_cascadingDropdown', new dropdown(this, parent));
             });
         });
     };
