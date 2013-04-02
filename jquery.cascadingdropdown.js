@@ -14,7 +14,7 @@
 
     // constructor
     function dropdown(options, parent){
-        this.el = $(options.selector);
+        this.el = $(options.selector, parent);
         this.options = options;
         this.requiredDropdowns = options.requires && options.requires.length ? $(options.requires.join(','), parent) : null;
         this.requirementsMet = true;
@@ -120,7 +120,7 @@
         return this.each(function(){
             var parent = this;
             $.each(options.selectBoxes, function(){
-                $(this.selector).data('plugin_cascadingDropdown', new dropdown(this, parent));
+                $(this.selector, parent).data('plugin_cascadingDropdown', new dropdown(this, parent));
             });
         });
     };
