@@ -33,6 +33,12 @@ the textKey and valueKey parameters must also be set.
 
 If this parameter is not set, the plugin will simply enable the select box.
 
+##### usePost (boolean)
+
+    usePost: false
+
+Tells the plugin to use POST when sending Ajax request. Otherwise GET will be used.
+
 ##### textKey (string)
 
     textKey: 'text'
@@ -56,7 +62,7 @@ Array of select box selectors required to have value before fetching own list.
     requireAll: true
 
 If set to true, all select boxes defined in the requires array must have a value before this particular
-select box is enabled, and own list is requested if the url parameter is set.
+select box is enabled.
 
 ##### paramName (string)
 
