@@ -2,7 +2,7 @@
 
 A simple and lighweight jQuery plugin for cascading dropdowns.
 
-[View Demo](http://dnasir.com/github/jquery.cascadingdropdown/index.html)
+[View Demo](http://dnasir.com/github/jquery.cascadingdropdown/demo.html)
 
 ## Installation
 
