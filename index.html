@@ -8,39 +8,72 @@
         <meta name="viewport" content="width=device-width">
 
         <!-- Stylesheets here -->
+        <link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.0/css/bootstrap.min.css" />
+        <style type="text/css">
+        	.bs-docs-example {
+        		position: relative;
+				margin: 15px 0;
+				padding: 39px 19px 14px;
+				background-color: #fff;
+				border: 1px solid #ddd;
+				-webkit-border-radius: 4px;
+				-moz-border-radius: 4px;
+				border-radius: 4px;
+        	}
+
+        	.bs-docs-example:after {
+        		content: "Example";
+				position: absolute;
+				top: -1px;
+				left: -1px;
+				padding: 3px 7px;
+				font-size: 12px;
+				font-weight: bold;
+				background-color: #f5f5f5;
+				border: 1px solid #ddd;
+				color: #9da0a4;
+				-webkit-border-radius: 4px 0 4px 0;
+				-moz-border-radius: 4px 0 4px 0;
+				border-radius: 4px 0 4px 0;
+        	}
+        </style>
 	</head>
 	<body>
-		<h1>jQuery Cascading Dropdown Plugin Examples</h1>
-		<!-- Content here -->
+		<div class="container">
+			<div class="page-header">
+				<h1>jQuery Cascading Dropdown <small>Examples</small></h1>
+			</div>
 
-		<h2>Simple</h2>
-		<p>In this example, Step 2 is dependent on Step 1 having a value. Step 3 is dependent on either one of Step 1 and Step 2 having a value.</p>
-		<div id="example1">
-			<select class="step1">
-				<option value="">Please select an option</option>
-				<option>Option1</option>
-				<option>Option2</option>
-				<option>Option3</option>
-				<option>Option4</option>
-			</select>
-			<select class="step2">
-				<option value="">Please select an option</option>
-				<option>Option5</option>
-				<option>Option6</option>
-				<option>Option7</option>
-				<option>Option8</option>
-			</select>
-			<select class="step3">
-				<option value="">Please select an option</option>
-				<option>Option9</option>
-				<option>Option10</option>
-				<option>Option11</option>
-				<option>Option12</option>
-			</select>
-		</div>
-		<div>
-			<pre>
-$('#example1').cascadingDropdown({
+			<h4>Basic</h4>
+			<p>This is a basic dropdown setup where the second dropdown is dependent on the first dropdown having a value, and the third dropdown is dependent on either the first or second one having a value.</p>
+
+			<div id="example1" class="bs-docs-example">
+				<select class="step1">
+					<option value="">Please select an option</option>
+					<option>Option1</option>
+					<option>Option2</option>
+					<option>Option3</option>
+					<option>Option4</option>
+				</select>
+				<select class="step2">
+					<option value="">Please select an option</option>
+					<option>Option5</option>
+					<option>Option6</option>
+					<option>Option7</option>
+					<option>Option8</option>
+				</select>
+				<select class="step3">
+					<option value="">Please select an option</option>
+					<option>Option9</option>
+					<option>Option10</option>
+					<option>Option11</option>
+					<option>Option12</option>
+				</select>
+			</div>
+
+			<h6>Code</h6>
+			<div>
+<pre>$('#example1').cascadingDropdown({
 	selectBoxes: [
 		{
 			selector: '.step1'
@@ -54,14 +87,213 @@ $('#example1').cascadingDropdown({
 			requires: ['.step1', '.step2']
 		}
 	]
-});
-			</pre>
+});</pre>
+			</div>
+
+			<br>
+
+			<h4>Dynamic</h4>
+			<p>This example shows how you can create a completely dynamic group of dropdowns. Dropdowns with dependencies will react based on the rules given, and fetch its own list from the server via Ajax. </p>
+
+			<div id="example2" class="bs-docs-example">
+				<select class="step1">
+					<option value="">Please select an option</option>
+				</select>
+				<select class="step2">
+					<option value="">Please select an option</option>
+				</select>
+				<select class="step3">
+					<option value="">Please select an option</option>
+				</select>
+			</div>
+
+			<h6>Code</h6>
+			<div>
+<pre>$('#example2').cascadingDropdown({
+	selectBoxes: [
+		{
+			selector: '.step1',
+			paramName: 'cId',
+			url: '/api/country',
+			textKey: 'label',
+			valueKey: 'value'
+		},
+		{
+			selector: '.step2',
+			requires: ['.step1'],
+			paramName: 'sId',
+			url: '/api/sector',
+			textKey: 'label',
+			valueKey: 'value'
+		},
+		{
+			selector: '.step3',
+			requires: ['.step1', '.step2'],
+			requireAll: true,
+			url: '/api/offices',
+			textKey: 'label',
+			valueKey: 'value',
+			onChange: function(value){
+				alert(value);
+			}
+		}
+	]
+});</pre>
+			</div>
+
+			<br>
+
+			<h4>Combined</h4>
+			<p>This example demonstrates the plugin's capability to combine both static and dynamic dropdowns.</p>
+
+			<div id="example3" class="bs-docs-example">
+				<select class="step1">
+					<option value="">Please select an option</option>
+					<option value="uk">United Kingdom</option>
+					<option value="my">Malaysia</option>
+				</select>
+				<select class="step2">
+					<option value="">Please select an option</option>
+					<option value="1">Automotive</option>
+					<option value="2">Oil & Gas</option>
+					<option value="3">IT</option>
+				</select>
+				<select class="step3">
+					<option value="">Please select an option</option>
+				</select>
+			</div>
+
+			<h6>Code</h6>
+			<div>
+<pre>$('#example3').cascadingDropdown({
+	selectBoxes: [
+		{
+			selector: '.step1',
+			paramName: 'cId'
+		},
+		{
+			selector: '.step2',
+			paramName: 'sId'
+		},
+		{
+			selector: '.step3',
+			requires: ['.step1', '.step2'],
+			requireAll: true,
+			url: '/api/offices',
+			textKey: 'label',
+			valueKey: 'value',
+			onChange: function(value){
+				alert(value);
+			}
+		}
+	]
+});</pre>
+			</div>
+
+			<br>
+
+			<p class="text-center"><small>Copyright &copy; 2013 Dzulqarnain Nasir</small></p>
 		</div>
 
 		<!-- Scripts here -->
 		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+		<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery-mockjax/1.5.1/jquery.mockjax.js"></script>
 		<script type="text/javascript" src="jquery.cascadingdropdown.js"></script>
 		<script type="text/javascript">
+			// Some mockjax code to simulate Ajax calls
+			$.mockjax({
+				url: '/api/country',
+				responseText: [
+					{
+						label: 'United Kingdom',
+						value: 'uk'
+					},
+					{
+						label: 'Malaysia',
+						value: 'my'
+					}
+				]
+			});
+
+			$.mockjax({
+				url: '/api/sector',
+				responseText: [
+					{
+						label: 'Automotive',
+						value: '1'
+					},
+					{
+						label: 'Oil & Gas',
+						value: '2'
+					},
+					{
+						label: 'IT',
+						value: '3'
+					}
+				]
+			});
+
+			$.mockjax({
+				url: '/api/offices',
+				response: function(settings){
+					var data = settings.data;
+					var response = [];
+
+					if(data.cId == 'uk'){
+						switch(data.sId){
+							case '1':
+							case '2':
+								response = [
+									{
+										label: 'London Office',
+										value: 'Link to London Office page'
+									},
+									{
+										label: 'Manchester Office',
+										value: 'Link to Manchester Office page'
+									}
+								];
+								break;
+							case '3':
+								response = [
+									{
+										label: 'Southampton Office',
+										value: 'Link to Southampton Office page'
+									}
+								];
+								break;
+						}
+					}
+					else if(data.cId == 'my'){
+						switch(data.sId){
+							case '1':
+							case '2':
+								response = [
+									{
+										label: 'Kuala Lumpur Office',
+										value: 'Link to Kuala Lumpur Office page'
+									},
+									{
+										label: 'Putrajaya Office',
+										value: 'Link to Putrajaya Office page'
+									}
+								];
+								break;
+							case '3':
+								response = [
+									{
+										label: 'Penang Office',
+										value: 'Link to Penang Office page'
+									}
+								];
+								break;
+						}
+					}
+
+					this.responseText = response;
+				}
+			});
+
 			$(document).ready(function(){
 				$('#example1').cascadingDropdown({
 					selectBoxes: [
@@ -75,6 +307,61 @@ $('#example1').cascadingDropdown({
 						{
 							selector: '.step3',
 							requires: ['.step1', '.step2']
+						}
+					]
+				});
+
+				$('#example2').cascadingDropdown({
+					selectBoxes: [
+						{
+							selector: '.step1',
+							paramName: 'cId',
+							url: '/api/country',
+							textKey: 'label',
+							valueKey: 'value'
+						},
+						{
+							selector: '.step2',
+							requires: ['.step1'],
+							paramName: 'sId',
+							url: '/api/sector',
+							textKey: 'label',
+							valueKey: 'value'
+						},
+						{
+							selector: '.step3',
+							requires: ['.step1', '.step2'],
+							requireAll: true,
+							url: '/api/offices',
+							textKey: 'label',
+							valueKey: 'value',
+							onChange: function(value){
+								alert(value);
+							}
+						}
+					]
+				});
+
+				$('#example3').cascadingDropdown({
+					selectBoxes: [
+						{
+							selector: '.step1',
+							paramName: 'cId'
+						},
+						{
+							selector: '.step2',
+							paramName: 'sId'
+						},
+						{
+							selector: '.step3',
+							requires: ['.step1', '.step2'],
+							requireAll: true,
+							url: '/api/offices',
+							textKey: 'label',
+							valueKey: 'value',
+							onChange: function(value){
+								alert(value);
+							}
 						}
 					]
 				});
