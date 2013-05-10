@@ -22,6 +22,13 @@ These options can be overridden for each individual select box.
 
 Tells the plugin to use POST when sending Ajax request. Otherwise GET will be used.
 
+#### UseJson (boolean)
+
+    useJson: false
+
+Tells the plugin to stringify (JSON.stringify) select box data before sending. Requires 
+[json2.js](https://github.com/douglascrockford/JSON-js) if you're planning to support older browsers.
+
 #### textKey (string)
 
     textKey: 'text'
