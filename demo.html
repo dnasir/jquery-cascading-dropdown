@@ -205,6 +205,7 @@
 			// Some mockjax code to simulate Ajax calls
 			$.mockjax({
 				url: '/api/country',
+				contentType: 'application/json; charset=utf-8',
 				responseText: [
 					{
 						label: 'United Kingdom',
@@ -219,6 +220,7 @@
 
 			$.mockjax({
 				url: '/api/sector',
+				contentType: 'application/json; charset=utf-8',
 				responseText: [
 					{
 						label: 'Automotive',
@@ -237,6 +239,7 @@
 
 			$.mockjax({
 				url: '/api/offices',
+				contentType: 'application/json; charset=utf-8',
 				response: function(settings){
 					var data = settings.data;
 					var response = [];

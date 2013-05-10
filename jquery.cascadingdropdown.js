@@ -93,11 +93,21 @@
                 url: this.options.url,
                 data: ajaxData,
                 type: this.options.usePost ? 'post' : 'get',
-
-                success: $.proxy(function(data){
+                contentType: "application/json; charset=utf-8",
+                success: $.proxy(function(data) {
+                    if(!data) {
+                        return;
+                    }
+                    
                     this.el.children('option').remove();
                     this.el.append(this.originalOptions);
 
+                    // For .NET web services
+                    if(data.hasOwnProperty('d')){
+                        data = data.d;
+                    }
+
+                    data = $.parseJSON(data);
                     $.each(data, $.proxy(function(index, item){
                         if(!item[this.options.textKey] || !item[this.options.valueKey]){
                             return true;
@@ -111,7 +121,7 @@
                         this.el.append('<option value="' + item[this.options.valueKey] + '"' + defaultAttr + '>' + item[this.options.textKey] + '</option>');
                     }, this));
                 }, this)
-            })
+            });
         }
     };
 
