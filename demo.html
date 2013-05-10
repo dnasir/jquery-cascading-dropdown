@@ -97,6 +97,8 @@
 			<h4>Dynamic</h4>
 			<p>This example shows how you can create a completely dynamic group of dropdowns. Dropdowns with dependencies will react based on the rules given, and fetch its own list from the server via Ajax. </p>
 
+			<p>In this example you can also see how you the textKey and valueKey is used, and how you can override those values for each individual select box.</p>
+
 			<div id="example2" class="bs-docs-example">
 				<select class="step1">
 					<option value="">Please select an option</option>
@@ -112,29 +114,26 @@
 			<h6>Code</h6>
 			<div>
 <pre class="brush: js">$('#example2').cascadingDropdown({
+	textKey: 'label',
+	valueKey: 'value',
 	selectBoxes: [
 		{
 			selector: '.step1',
 			paramName: 'cId',
-			url: '/api/country',
-			textKey: 'label',
-			valueKey: 'value'
+			url: '/api/country'
 		},
 		{
 			selector: '.step2',
 			requires: ['.step1'],
 			paramName: 'sId',
 			url: '/api/sector',
-			textKey: 'label',
-			valueKey: 'value'
+			valueKey: 'sectorId'
 		},
 		{
 			selector: '.step3',
 			requires: ['.step1', '.step2'],
 			requireAll: true,
 			url: '/api/offices',
-			textKey: 'label',
-			valueKey: 'value',
 			onChange: function(value){
 				alert(value);
 			}
@@ -224,15 +223,15 @@
 				responseText: JSON.stringify([
 					{
 						label: 'Automotive',
-						value: '1'
+						sectorId: '1'
 					},
 					{
 						label: 'Oil & Gas',
-						value: '2'
+						sectorId: '2'
 					},
 					{
 						label: 'IT',
-						value: '3'
+						sectorId: '3'
 					}
 				])
 			});
@@ -317,29 +316,26 @@
 				});
 
 				$('#example2').cascadingDropdown({
+					textKey: 'label',
+					valueKey: 'value',
 					selectBoxes: [
 						{
 							selector: '.step1',
 							paramName: 'cId',
-							url: '/api/country',
-							textKey: 'label',
-							valueKey: 'value'
+							url: '/api/country'
 						},
 						{
 							selector: '.step2',
 							requires: ['.step1'],
 							paramName: 'sId',
 							url: '/api/sector',
-							textKey: 'label',
-							valueKey: 'value'
+							valueKey: 'sectorId'
 						},
 						{
 							selector: '.step3',
 							requires: ['.step1', '.step2'],
 							requireAll: true,
 							url: '/api/offices',
-							textKey: 'label',
-							valueKey: 'value',
 							onChange: function(value){
 								alert(value);
 							}
