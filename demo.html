@@ -366,6 +366,18 @@
 						}
 					]
 				});
+        
+        $('.step1').on('change.cascadingdropdownAjaxSuccess',function(e){
+          if(e.namespace != 'cascadingdropdownAjaxSuccess'){
+            e.stopPropagation();
+          }else{
+            $(this).trigger('change');
+          }
+        });
+    
+        $('.step1').on('change.cascadingdropdownAjaxError',function(e, xhr){
+          console.log('ajax failed');
+        });
 			});
 		</script>
 		<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/scripts/shCore.js"></script>

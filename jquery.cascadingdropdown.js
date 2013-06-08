@@ -121,6 +121,10 @@
 
                         this.el.append('<option value="' + item[this.options.valueKey] + '"' + defaultAttr + '>' + item[this.options.textKey] + '</option>');
                     }, this));
+                    $(this.el).trigger('change.cascadingdropdownAjaxSuccess');
+                }, this),
+                error: $.proxy(function(jqXHR, textStatus, errorThrown) {
+                    $(this.el).trigger('change.cascadingdropdownAjaxError', jqXHR);
                 }, this)
             });
         }
