@@ -13,7 +13,7 @@
     'use strict';
 
     // constructor
-    function dropdown(options, parent) {
+    function Dropdown(options, parent) {
         this.el = $(options.selector, parent);
         this.options = $.extend({}, parent.options, options);
         this.requiredDropdowns = options.requires && options.requires.length ? $(options.requires.join(','), parent) : null;
@@ -23,21 +23,23 @@
     }
 
     // methods
-    dropdown.prototype = {
+    Dropdown.prototype = {
         init: function() {
-            if(typeof this.options.onChange === 'function') {
-                this.el.on('change', $.proxy(function() {
-                    this.options.onChange.call(this, this.el.val());
-                }, this));
+            var self = this;
+
+            if(typeof self.options.onChange === 'function') {
+                self.el.on('change', function() {
+                    self.options.onChange.call(self, self.el.val());
+                });
             }
 
-            if(this.requiredDropdowns) {
-                this.requiredDropdowns.on('change', $.proxy(function() {
-                    this.checkRequirements();
-                }, this));
+            if(self.requiredDropdowns) {
+                self.requiredDropdowns.on('change', function() {
+                    self.checkRequirements();
+                });
             }
 
-            this.checkRequirements();
+            self.checkRequirements();
         },
 
         enable: function() {
@@ -49,39 +51,47 @@
         },
 
         checkRequirements: function() {
-            if(this.requiredDropdowns) {
-                if(this.options.requireAll) {
-                    this.requirementsMet = this.requiredDropdowns.filter(function() {
+            var self = this;
+
+            if(self.requiredDropdowns) {
+                if(self.options.requireAll) {
+                    self.requirementsMet = self.requiredDropdowns.filter(function() {
                         return !!$(this).val();
-                    }).length == this.options.requires.length;
+                    }).length == self.options.requires.length;
                 } else {
-                    this.requirementsMet = this.requiredDropdowns.filter(function() {
+                    self.requirementsMet = self.requiredDropdowns.filter(function() {
                         return !!$(this).val();
                     }).length > 0;
                 }
             }
 
-            if(this.requirementsMet) {
-                this.fetchList();
-                this.enable();
-            } else {
-                this.disable();
+            self.disable();
+            if(self.requirementsMet) {
+                self.fetchList(function(){
+                    self.enable();
+                });
             }
         },
 
-        fetchList: function() {
-            if(!this.options.url) {
+        fetchList: function(callback) {
+            var self = this;
+
+            if(!self.options.url) {
+                typeof callback === 'function' && callback();
                 return;
             }
 
-            if(!this.options.textKey || !this.options.valueKey) {
+            if(!self.options.textKey || !self.options.valueKey) {
                 $.error('Insufficient parameters');
             }
 
+            self.el.children('option').remove();
+            self.el.append(self.originalOptions);
+
             var ajaxData = {};
 
-            if(this.requiredDropdowns) {
-                $.each(this.requiredDropdowns, function() {
+            if(self.requiredDropdowns) {
+                $.each(self.requiredDropdowns, function() {
                     var instance = $(this).data('plugin_cascadingDropdown');
                     if(instance.options.paramName) {
                         ajaxData[instance.options.paramName] = instance.el.val();
@@ -90,18 +100,15 @@
             }
             
             $.ajax({
-                url: this.options.url,
-                data: this.options.useJson ? JSON.stringify(ajaxData) : ajaxData,
-                dataType: this.options.useJson ? 'json' : undefined,
-                type: this.options.usePost ? 'post' : 'get',
+                url: self.options.url,
+                data: self.options.useJson ? JSON.stringify(ajaxData) : ajaxData,
+                dataType: self.options.useJson ? 'json' : undefined,
+                type: self.options.usePost ? 'post' : 'get',
                 contentType: "application/json; charset=utf-8",
-                success: $.proxy(function(data) {
+                success: function(data) {
                     if(!data) {
                         return;
                     }
-
-                    this.el.children('option').remove();
-                    this.el.append(this.originalOptions);
 
                     // For .NET web services
                     if(data.hasOwnProperty('d')) {
@@ -109,19 +116,21 @@
                     }
                     
                     data = typeof data === 'string' ? $.parseJSON(data) : data;
-                    $.each(data, $.proxy(function(index, item) {
-                        if(!item[this.options.textKey] || !item[this.options.valueKey]) {
+                    $.each(data, function(index, item) {
+                        if(!item[self.options.textKey] || !item[self.options.valueKey]) {
                             return true;
                         }
 
                         var defaultAttr = '';
-                        if(this.options.defaultValue == item[this.options.valueKey]) {
+                        if(self.options.defaultValue == item[self.options.valueKey]) {
                             defaultAttr = ' selected="selected"';
                         }
 
-                        this.el.append('<option value="' + item[this.options.valueKey] + '"' + defaultAttr + '>' + item[this.options.textKey] + '</option>');
-                    }, this));
-                }, this)
+                        self.el.append('<option value="' + item[self.options.valueKey] + '"' + defaultAttr + '>' + item[self.options.textKey] + '</option>');
+                    });
+
+                    typeof callback === 'function' && callback();
+                }
             });
         }
     };
@@ -132,7 +141,7 @@
             var parent = this;
             parent.options = options;
             $.each(options.selectBoxes, function() {
-                $(this.selector, parent).data('plugin_cascadingDropdown', new dropdown(this, parent));
+                $(this.selector, parent).data('plugin_cascadingDropdown', new Dropdown(this, parent));
             });
         });
     };
