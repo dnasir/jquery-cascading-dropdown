@@ -87,10 +87,6 @@ Required select box value parameter name used in Ajax request when fetching own 
 
 Function to be executed when select box value is changed. Provides new select box value.
 
-## Example usage
-
-[Check out the demo](http://dnasir.com/github/jquery.cascadingdropdown/demo.html)
-
 ## Server-side implementation
 
 This plugin uses Ajax to execute a GET request for the list of option items to be inserted into the select boxes. 
