@@ -1,5 +1,5 @@
 ﻿/* 
- *   jQuery Cascading Dropdown Plugin 1.1.3
+ *   jQuery Cascading Dropdown Plugin 1.1.4
  *   https://github.com/dnasir/jquery-cascading-dropdown
  *
  *   Copyright 2013, Dzulqarnain Nasir
@@ -12,10 +12,18 @@
 (function ($, undefined) {
     'use strict';
 
+    var defaultOptions = {
+        usePost: false,
+        useJson: false,
+        textKey: 'text',
+        valueKey: 'value',
+        selectBoxes: []
+    };
+
     // constructor
     function Dropdown(options, parent) {
         this.el = $(options.selector, parent);
-        this.options = $.extend({}, parent.options, options);
+        this.options = $.extend({}, defaultOptions, parent.options, options);
         this.requiredDropdowns = options.requires && options.requires.length ? $(options.requires.join(','), parent) : null;
         this.requirementsMet = true;
         this.originalOptions = this.el.children('option');
@@ -81,10 +89,6 @@
                 return;
             }
 
-            if(!self.options.textKey || !self.options.valueKey) {
-                $.error('Insufficient parameters');
-            }
-
             self.el.children('option').remove();
             self.el.append(self.originalOptions);
 
@@ -98,9 +102,11 @@
                     }
                 });
             }
+
+            var ajaxUrl = typeof self.options.url === 'function' ? self.options.url(ajaxData) : self.options.url;
             
             $.ajax({
-                url: self.options.url,
+                url: ajaxUrl,
                 data: self.options.useJson ? JSON.stringify(ajaxData) : ajaxData,
                 dataType: self.options.useJson ? 'json' : undefined,
                 type: self.options.usePost ? 'post' : 'get',

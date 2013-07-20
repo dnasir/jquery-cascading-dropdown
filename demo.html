@@ -92,7 +92,7 @@
 });</pre>
 			</div>
 
-			<br>
+			<br />
 
 			<h4>Dynamic</h4>
 			<p>This example shows how you can create a completely dynamic group of dropdowns. Dropdowns with dependencies will react based on the rules given, and fetch its own list from the server via Ajax. </p>
@@ -142,7 +142,7 @@
 });</pre>
 			</div>
 
-			<br>
+			<br />
 
 			<h4>Combined</h4>
 			<p>This example demonstrates the plugin's capability to combine both static and dynamic dropdowns.</p>
@@ -191,17 +191,123 @@
 });</pre>
 			</div>
 
-			<br>
+			<br />
+
+			<h4>Generating URL from dropdown values</h4>
+			<p>This example shows how you can use the input from the required dropdowns as parameters to generate the URL for your RESTful web API. Notice how the parameter property names match the paramName values.</p>
+
+			<div id="example4" class="bs-docs-example">
+				<select class="step1">
+					<option value="">Please select an option</option>
+					<option value="uk">United Kingdom</option>
+					<option value="my">Malaysia</option>
+				</select>
+				<select class="step2">
+					<option value="">Please select an option</option>
+					<option value="1">Automotive</option>
+					<option value="2">Oil & Gas</option>
+					<option value="3">IT</option>
+				</select>
+				<select class="step3">
+					<option value="">Please select an option</option>
+				</select>
+			</div>
+
+			<h6>Code</h6>
+			<div>
+<pre class="brush: js">$('#example4').cascadingDropdown({
+	selectBoxes: [
+		{
+			selector: '.step1',
+			paramName: 'cId'
+		},
+		{
+			selector: '.step2',
+			paramName: 'sId'
+		},
+		{
+			selector: '.step3',
+			requires: ['.step1', '.step2'],
+			requireAll: true,
+			url: function(params){
+				return '/api/offices/' + params.cId + '/' + params.sId;
+			},
+			textKey: 'label',
+			valueKey: 'value',
+			onChange: function(value){
+				alert(value);
+			}
+		}
+	]
+});</pre>
+			</div>
+
+			<br />
 
 			<p class="text-center"><small>Copyright &copy; 2013 <a href="http://dnasir.com">Dzulqarnain Nasir</a></small></p>
 		</div>
 
 		<!-- Scripts here -->
 		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.js"></script>
-		<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery-mockjax/1.5.1/jquery.mockjax.js"></script>
+		<script type="text/javascript" src="jquery.mockjax.js"></script>
 		<script type="text/javascript" src="jquery.cascadingdropdown.js"></script>
 		<script type="text/javascript">
 			// Some mockjax code to simulate Ajax calls
+			function getOfficeList(countryId, sectorId){
+				var response = [];
+				if(countryId == 'uk'){
+					switch(sectorId){
+						case '1':
+						case '2':
+							response = [
+								{
+									label: 'London Office',
+									value: 'Link to London Office page'
+								},
+								{
+									label: 'Manchester Office',
+									value: 'Link to Manchester Office page'
+								}
+							];
+							break;
+						case '3':
+							response = [
+								{
+									label: 'Southampton Office',
+									value: 'Link to Southampton Office page'
+								}
+							];
+							break;
+					}
+				}
+				else if(countryId == 'my'){
+					switch(sectorId){
+						case '1':
+						case '2':
+							response = [
+								{
+									label: 'Kuala Lumpur Office',
+									value: 'Link to Kuala Lumpur Office page'
+								},
+								{
+									label: 'Putrajaya Office',
+									value: 'Link to Putrajaya Office page'
+								}
+							];
+							break;
+						case '3':
+							response = [
+								{
+									label: 'Penang Office',
+									value: 'Link to Penang Office page'
+								}
+							];
+							break;
+					}
+				}
+				return response;
+			}
+
 			$.mockjax({
 				url: '/api/country',
 				contentType: 'application/json; charset=utf-8',
@@ -240,63 +346,18 @@
 				url: '/api/offices',
 				contentType: 'application/json; charset=utf-8',
 				response: function(settings){
-					var data = settings.data;
-					var response = [];
-
-					if(data.cId == 'uk'){
-						switch(data.sId){
-							case '1':
-							case '2':
-								response = [
-									{
-										label: 'London Office',
-										value: 'Link to London Office page'
-									},
-									{
-										label: 'Manchester Office',
-										value: 'Link to Manchester Office page'
-									}
-								];
-								break;
-							case '3':
-								response = [
-									{
-										label: 'Southampton Office',
-										value: 'Link to Southampton Office page'
-									}
-								];
-								break;
-						}
-					}
-					else if(data.cId == 'my'){
-						switch(data.sId){
-							case '1':
-							case '2':
-								response = [
-									{
-										label: 'Kuala Lumpur Office',
-										value: 'Link to Kuala Lumpur Office page'
-									},
-									{
-										label: 'Putrajaya Office',
-										value: 'Link to Putrajaya Office page'
-									}
-								];
-								break;
-							case '3':
-								response = [
-									{
-										label: 'Penang Office',
-										value: 'Link to Penang Office page'
-									}
-								];
-								break;
-						}
-					}
-
-					this.responseText = JSON.stringify(response);
+					this.responseText = JSON.stringify(getOfficeList(settings.data.cId, settings.data.sId));
 				}
 			});
+
+			$.mockjax({
+				url: /^\/api\/offices\/([\w]+)\/([\w]+)$/,
+				urlParams: ['countryId', 'sectorId'],
+				contentType: 'application/json; charset=utf-8',
+				response: function(settings){
+					this.responseText = JSON.stringify(getOfficeList(settings.urlParams.countryId, settings.urlParams.sectorId));
+				}
+			})
 
 			$(document).ready(function(){
 				$('#example1').cascadingDropdown({
@@ -358,6 +419,32 @@
 							requires: ['.step1', '.step2'],
 							requireAll: true,
 							url: '/api/offices',
+							textKey: 'label',
+							valueKey: 'value',
+							onChange: function(value){
+								alert(value);
+							}
+						}
+					]
+				});
+
+				$('#example4').cascadingDropdown({
+					selectBoxes: [
+						{
+							selector: '.step1',
+							paramName: 'cId'
+						},
+						{
+							selector: '.step2',
+							paramName: 'sId'
+						},
+						{
+							selector: '.step3',
+							requires: ['.step1', '.step2'],
+							requireAll: true,
+							url: function(params){
+								return '/api/offices/' + params.cId + '/' + params.sId;
+							},
 							textKey: 'label',
 							valueKey: 'value',
 							onChange: function(value){

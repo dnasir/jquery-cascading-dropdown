@@ -53,9 +53,15 @@ Array of select box objects
 
 Selector for select box inside parent container. (Required)
 
-##### url (string)
+##### url (string|function)
 
     url: '/api/CompanyInfo/GetCountries'
+
+<sub>Added: 1.1.4</sub>
+
+    url: function(params) {
+        return '/path/to/api/' + params.dd1Val + '/' + params.dd2Val;
+    }
 
 Url to be used in Ajax request for fetching select box items. If this parameter is set,
 the textKey and valueKey parameters must also be set.
