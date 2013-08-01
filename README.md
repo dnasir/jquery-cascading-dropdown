@@ -87,6 +87,16 @@ select box is enabled.
 
 Required select box value parameter name used in Ajax request when fetching own list.
 
+##### selected (integer|string)
+
+    selected: 1
+
+    selected: 'value1'
+
+<sub>Added: 1.1.5</sub>
+
+Sets the default selected item in the dropdown. Only applicable to Ajax generated dropdowns.
+
 ##### onChange (function)
 
     onChange: function(value) { doSomething(value); }
