@@ -75,8 +75,12 @@
 
             self.disable();
             if(self.requirementsMet) {
-                self.fetchList(function(){
+                self.fetchList(function(triggerChange) {
                     self.enable();
+
+                    if(triggerChange) {
+                        self.el.trigger('change');
+                    }
                 });
             }
         },
@@ -121,21 +125,24 @@
                         data = data.d;
                     }
                     
+                    var triggerChange = false;
+
                     data = typeof data === 'string' ? $.parseJSON(data) : data;
                     $.each(data, function(index, item) {
                         if(!item[self.options.textKey] || !item[self.options.valueKey]) {
                             return true;
                         }
 
-                        var defaultAttr = '';
-                        if(self.options.defaultValue == item[self.options.valueKey]) {
-                            defaultAttr = ' selected="selected"';
+                        var selectedAttr = '';
+                        if((typeof self.options.selected === 'number' && self.options.selected === index) || self.options.selected == item[self.options.valueKey]) {
+                            selectedAttr = ' selected="selected"';
+                            triggerChange = true;
                         }
 
-                        self.el.append('<option value="' + item[self.options.valueKey] + '"' + defaultAttr + '>' + item[self.options.textKey] + '</option>');
+                        self.el.append('<option value="' + item[self.options.valueKey] + '"' + selectedAttr + '>' + item[self.options.textKey] + '</option>');
                     });
 
-                    typeof callback === 'function' && callback();
+                    typeof callback === 'function' && callback(triggerChange);
                 }
             });
         }
