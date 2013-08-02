@@ -15,136 +15,183 @@
     var defaultOptions = {
         usePost: false,
         useJson: false,
-        textKey: 'text',
-        valueKey: 'value',
         selectBoxes: []
     };
 
-    // constructor
+    // Constructor
     function Dropdown(options, parent) {
         this.el = $(options.selector, parent);
-        this.options = $.extend({}, defaultOptions, parent.options, options);
+        this.options = $.extend({}, defaultOptions, options);
+        this.name = this.options.paramName || this.el.attr('name');
         this.requiredDropdowns = options.requires && options.requires.length ? $(options.requires.join(','), parent) : null;
-        this.requirementsMet = true;
         this.originalOptions = this.el.children('option');
-        this.init();
+        this._init();
     }
 
-    // methods
+    // Methods
     Dropdown.prototype = {
-        init: function() {
+        _init: function() {
             var self = this;
 
             if(typeof self.options.onChange === 'function') {
-                self.el.on('change', function() {
-                    self.options.onChange.call(self, self.el.val());
+                self.el.change(function() {
+                    self.options.onChange.call(self, self.el.val(), self.getRequiredValues());
                 });
             }
 
             if(self.requiredDropdowns) {
-                self.requiredDropdowns.on('change', function() {
-                    self.checkRequirements();
+                self.requiredDropdowns.change(function() {
+                    self.update();
                 });
             }
 
-            self.checkRequirements();
+            self._initSource();
+            self.update();
         },
 
-        enable: function() {
+        // Enables the dropdown
+        _enable: function() {
             this.el.removeAttr('disabled');
         },
 
-        disable: function() {
+        // Disables the dropdown
+        _disable: function() {
             this.el.attr('disabled', 'disabled');
         },
 
-        checkRequirements: function() {
+        // Checks if required dropdowns have value
+        _requirementsMet: function() {
             var self = this;
 
-            if(self.requiredDropdowns) {
-                if(self.options.requireAll) {
-                    self.requirementsMet = self.requiredDropdowns.filter(function() {
-                        return !!$(this).val();
-                    }).length == self.options.requires.length;
-                } else {
-                    self.requirementsMet = self.requiredDropdowns.filter(function() {
-                        return !!$(this).val();
-                    }).length > 0;
-                }
+            if(!self.requiredDropdowns) {
+                return true;
             }
 
-            self.disable();
-            if(self.requirementsMet) {
-                self.fetchList(function(triggerChange) {
-                    self.enable();
-
-                    if(triggerChange) {
-                        self.el.trigger('change');
-                    }
-                });
+            if(self.options.requireAll) { // If requireAll is true, return true if all dropdowns have values
+                return (self.requiredDropdowns.filter(function() {
+                    return !!$(this).val();
+                }).length == self.options.requires.length);
+            } else { // Otherwise, return true if any one of the required dropdowns has value
+                return (self.requiredDropdowns.filter(function() {
+                    return !!$(this).val();
+                }).length > 0);
             }
         },
 
-        fetchList: function(callback) {
+        // Defines dropdown item list source - inspired by jQuery UI Autocomplete
+        _initSource: function() {
             var self = this;
 
-            if(!self.options.url) {
-                typeof callback === 'function' && callback();
+            if($.isArray(self.options.source)) {
+                this.source = function(request, response) {
+                    response($.map(self.options.source, function(item) {
+                        return {
+                            label: item.label || item.value || item,
+                            value: item.value || item.label || item
+                        };
+                    }));
+                };
+            } else if ( typeof self.options.source === "string" ) {
+                var url = self.options.source;
+
+                this.source = function(request, response) {
+                    if ( self.xhr ) {
+                        self.xhr.abort();
+                    }
+                    self.xhr = $.ajax({
+                        url: url,
+                        data: self.options.useJson ? JSON.stringify(ajaxData) : request,
+                        dataType: self.options.useJson ? 'json' : undefined,
+                        type: self.options.usePost ? 'post' : 'get',
+                        contentType: 'application/json; charset=utf-8',
+                        success: function(data) {
+                            response(data);
+                        },
+                        error: function() {
+                            response([]);
+                        }
+                    });
+                };
+            } else {
+                this.source = self.options.source;
+            }
+        },
+
+        getRequiredValues: function() {
+            var self = this;
+
+            var data = {};
+            if(self.requiredDropdowns) {
+                $.each(self.requiredDropdowns, function() {
+                    var instance = $(this).data('plugin_cascadingDropdown');
+                    if(instance.name) {
+                        data[instance.name] = instance.el.val();
+                    }
+                });
+            }
+
+            return data;
+        },
+
+        // Update the dropdown
+        update: function() {
+            var self = this;
+
+            // Disable it first
+            self._disable();
+
+            // If required dropdowns have no value, return
+            if(!self._requirementsMet()) {
                 return;
             }
+
+            // If source isn't defined, it's most likely a static dropdown, so just enable it
+            if(!self.source) {
+                self._enable();
+                return;
+            }
+
+            // Fetch data from required dropdowns
+            var data = self.getRequiredValues();
+
+            // Pass it to defined source for processing
+            self.source(data, self._response());
+        },
+
+        _response: function(items) {
+            var self = this;
+
+            return function(items) {
+                self._renderItems(items);
+            }
+        },
+
+        // Render the dropdown items
+        _renderItems: function(items) {
+            var self = this;
 
             self.el.children('option').remove();
             self.el.append(self.originalOptions);
 
-            var ajaxData = {};
-
-            if(self.requiredDropdowns) {
-                $.each(self.requiredDropdowns, function() {
-                    var instance = $(this).data('plugin_cascadingDropdown');
-                    if(instance.options.paramName) {
-                        ajaxData[instance.options.paramName] = instance.el.val();
-                    }
-                });
+            if(!items || !items.length) {
+                return;
             }
 
-            var ajaxUrl = typeof self.options.url === 'function' ? self.options.url(ajaxData) : self.options.url;
-            
-            $.ajax({
-                url: ajaxUrl,
-                data: self.options.useJson ? JSON.stringify(ajaxData) : ajaxData,
-                dataType: self.options.useJson ? 'json' : undefined,
-                type: self.options.usePost ? 'post' : 'get',
-                contentType: "application/json; charset=utf-8",
-                success: function(data) {
-                    if(!data) {
-                        return;
-                    }
+            var triggerChange = false;
 
-                    // For .NET web services
-                    if(data.hasOwnProperty('d')) {
-                        data = data.d;
-                    }
-                    
-                    var triggerChange = false;
-
-                    data = typeof data === 'string' ? $.parseJSON(data) : data;
-                    $.each(data, function(index, item) {
-                        if(!item[self.options.textKey] || !item[self.options.valueKey]) {
-                            return true;
-                        }
-
-                        var selectedAttr = '';
-                        if((typeof self.options.selected === 'number' && self.options.selected === index) || self.options.selected == item[self.options.valueKey]) {
-                            selectedAttr = ' selected="selected"';
-                            triggerChange = true;
-                        }
-
-                        self.el.append('<option value="' + item[self.options.valueKey] + '"' + selectedAttr + '>' + item[self.options.textKey] + '</option>');
-                    });
-
-                    typeof callback === 'function' && callback(triggerChange);
+            $.each(items, function(index, item) {
+                var selectedAttr = '';
+                if(item.selected) {
+                    selectedAttr = ' selected="selected"';
+                    triggerChange = true;
                 }
+
+                self.el.append('<option value="' + item.value + '"' + selectedAttr + '>' + item.label + '</option>');
             });
+
+            self._enable();
+
+            triggerChange && self.el.change();
         }
     };
 
@@ -152,10 +199,24 @@
     $.fn.cascadingDropdown = function(options) {
         return this.each(function() {
             var parent = this;
-            parent.options = options;
+            var dropdowns = $();
             $.each(options.selectBoxes, function() {
-                $(this.selector, parent).data('plugin_cascadingDropdown', new Dropdown(this, parent));
+                var dropdown = $(this.selector, parent).data('plugin_cascadingDropdown', new Dropdown(this, parent));
+                dropdowns.push(dropdown.get(0));
             });
+
+            if(options.onChange) {
+                dropdowns.change(function() {
+                    var data = {};
+                    $.each(dropdowns, function(index, item) {
+                        var instance = $(this).data('plugin_cascadingDropdown');
+                        if(instance.name) {
+                            data[instance.name] = instance.el.val();
+                        }
+                    });
+                    options.onChange.call(this, data);
+                });
+            }
         });
     };
 })(jQuery);
