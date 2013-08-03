@@ -100,7 +100,7 @@
                     }
                     self.xhr = $.ajax({
                         url: url,
-                        data: self.options.useJson ? JSON.stringify(ajaxData) : request,
+                        data: self.options.useJson ? JSON.stringify(request) : request,
                         dataType: self.options.useJson ? 'json' : undefined,
                         type: self.options.usePost ? 'post' : 'get',
                         contentType: 'application/json; charset=utf-8',
