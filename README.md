@@ -1,6 +1,6 @@
 # jQuery Cascading Dropdown Plugin
 
-A simple and lighweight jQuery plugin for cascading dropdowns.
+A simple and lighweight jQuery plugin for creating cascading dropdowns. 
 
 [View Demo](http://dnasir.com/github/jquery-cascading-dropdown/demo.html)
 
@@ -14,118 +14,135 @@ Include script after the jQuery library (unless you are packaging scripts someho
 
 ## Options
 
-These options can be overridden for each individual select box.
-
 #### usePost (boolean)
 
     usePost: false
 
-Tells the plugin to use POST when sending Ajax request. Otherwise GET will be used.
+<sub>Added: 1.1.0</sub>
+
+Tells the plugin to use POST when sending Ajax request.
 
 #### UseJson (boolean)
 
     useJson: false
 
-Tells the plugin to stringify (JSON.stringify) select box data before sending. Requires 
+<sub>Added: 1.1.2</sub>
+
+Tells the plugin to stringify (JSON.stringify) dropdown data for Ajax requests. Requires 
 [json2.js](https://github.com/douglascrockford/JSON-js) if you're planning to support older browsers.
 
-#### textKey (string)
+#### onReady (eventHandler)
 
-    textKey: 'text'
+    onReady: function(event, allValues) { }
 
-The key to be used when parsing Ajax data for select box item text. (Required if url is set)
+<sub>Added: 1.2.0</sub>
 
-#### valueKey (string)
+An event that is triggered when the plugin is completely initialised. The event handler will be provided with the event object, and an object containing the current values of all the dropdowns in the group.
 
-    valueKey: 'value'
+#### onChange (eventHandler)
 
-The key to be used when parsing Ajax data for select box item value. (Required if url is set)
+    onChange: function(event, allValues) { }
+
+<sub>Added: 1.2.0</sub>
+
+An event that is triggered whenever the value of a dropdown in a particular group is changed. The event handler will be provided with the event object, and an object containing the current values of all the dropdowns in the group.
 
 #### selectBoxes
 
-Array of select box objects
+    selectBoxes: [
+        {
+            selector: '.select1',
+            ...
+        }
+    ]
 
-#### Select box properties
+<sub>Added: 1.0.0</sub>
+
+Array of dropdown objects
+
+#### Dropdown object properties
 
 ##### selector (string)
 
     selector: '.selectbox1'
 
+<sub>Added: 1.0.0</sub>
+
 Selector for select box inside parent container. (Required)
 
-##### url (string|function)
+##### source (string|function)
 
-    url: '/api/CompanyInfo/GetCountries'
+    source: '/api/CompanyInfo/GetCountries'
 
-<sub>Added: 1.1.4</sub>
-
-    url: function(params) {
-        return '/path/to/api/' + params.dd1Val + '/' + params.dd2Val;
+    source: function(request, response) {
+        $.getJSON('path/to/api', request, function(data) {
+            response($.map(data, function(item, index) {
+                return {
+                    label: item.itemLabel,
+                    value: item.itemValue
+                }
+            }));
+        });
     }
 
-Url to be used in Ajax request for fetching select box items. If this parameter is set,
-the textKey and valueKey parameters must also be set.
+<sub>Added: 1.2.0</sub>
 
-If this parameter is not set, the plugin will simply enable the select box.
+Source for dropdown items. This can be a URL pointing to the web service that provides the dropdown items, or a function that manually handles the Ajax request and response.
+
+If a URL is provided, the web service needs to follow a convention where the object returned must be a JSON object containing an array of objects, each containing at least a key-value property named 'label', or 'value'.
+
+Example JSON object
+
+    [
+        {
+            "label": "Item 1",
+            "value": "1"
+        },
+        {
+            "label": "Item 2",
+            "value": "2"
+        }
+    ]
+
+It's also possible to include a property named 'selected' in the object to define a selected item.
+
+If the source parameter is not set, the plugin will simply enable the select box when requirements are met.
 
 ##### requires (array)
 
     requires: ['.selectbox1']
 
-Array of select box selectors required to have value before fetching own list.
+<sub>Added: 1.0.0</sub>
+
+Array of dropdown selectors required to have value before this dropdown is enabled.
 
 ##### requireAll (boolean)
 
     requireAll: true
 
-If set to true, all select boxes defined in the requires array must have a value before this particular
-select box is enabled.
+<sub>Added: 1.0.0</sub>
+
+If set to true, all dropdowns defined in the requires array must have a value before this dropdown is enabled.
+If this value is set to false, this dropdown will be enabled if any one of the required dropdowns is valid.
 
 ##### paramName (string)
 
     paramName: 'countryId'
 
-Required select box value parameter name used in Ajax request when fetching own list.
+<sub>Added: 1.0.0</sub>
 
-##### selected (integer|string)
+Required dropdown value parameter name used in Ajax requests. If this value is not set, the plugin will use the dropdown name attribute. If neither this parameter nor the name attribute is set, this dropdown will not be taken into account in any Ajax request.
 
-    selected: 1
+##### onChange (eventHandler)
 
-    selected: 'value1'
+    onChange: function(event, value, requiredValues) { }
 
-<sub>Added: 1.1.5</sub>
+<sub>Added: 1.0.0</sub>
 
-Sets the default selected item in the dropdown. Only applicable to Ajax generated dropdowns.
-
-##### onChange (function)
-
-    onChange: function(value) { doSomething(value); }
-
-Function to be executed when select box value is changed. Provides new select box value.
+Event handler triggered when the dropdown value is changed. The event handler is passed the event object, the value of the current dropdown, and an object containing the values of all the required dropdowns.
 
 ## Server-side implementation
 
-This plugin uses Ajax to execute a GET request for the list of option items to be inserted into the select boxes. 
-So you'll need a web service that returns a JSON array of select box items.
+By default, this plugin expects the web service to return a JSON object containing an array of objects with properties 'label' and 'value'. The web service may also include a 'selected' property for an object within an array to indicate that that particular object is to be the selected item.
 
-Notice how there are two properties called textKey and valueKey. The values of these two properties are
-used to determine which property of the JSON array object should be used for the option text and which one
-should be used for the value. So if you have something like this in your select box object property:
-
-    textKey: 'country',
-    valueKey: 'countrycode'
-
-Your JSON object should look something like this:
-
-```json
-[
-    {
-        "country": "Malaysia",
-        "countrycode": "60"
-    },
-    {
-        "country": "Latvia",
-        "countrycode": "371"
-    }
-]
-```
+If the value property is not defined, the dropdown item will set the label as the value, and vice versa.

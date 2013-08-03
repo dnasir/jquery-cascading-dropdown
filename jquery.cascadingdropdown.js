@@ -20,43 +20,45 @@
 
     // Constructor
     function Dropdown(options, parent) {
-        this.el = $(options.selector, parent);
+        this.el = $(options.selector, parent.el);
+        this.parent = parent;
         this.options = $.extend({}, defaultOptions, options);
         this.name = this.options.paramName || this.el.attr('name');
-        this.requiredDropdowns = options.requires && options.requires.length ? $(options.requires.join(','), parent) : null;
+        this.requiredDropdowns = options.requires && options.requires.length ? $(options.requires.join(','), parent.el) : null;
         this.originalOptions = this.el.children('option');
-        this._init();
+        this._create();
     }
 
     // Methods
     Dropdown.prototype = {
-        _init: function() {
+        _create: function() {
             var self = this;
 
             if(typeof self.options.onChange === 'function') {
-                self.el.change(function() {
-                    self.options.onChange.call(self, self.el.val(), self.getRequiredValues());
+                self.el.change(function(event) {
+                    self.options.onChange.call(self, event, self.el.val(), self.getRequiredValues());
                 });
             }
 
             if(self.requiredDropdowns) {
-                self.requiredDropdowns.change(function() {
+                self.requiredDropdowns.change(function(event) {
                     self.update();
                 });
             }
 
             self._initSource();
             self.update();
+            self.el.trigger('ready')
         },
 
         // Enables the dropdown
-        _enable: function() {
-            this.el.removeAttr('disabled');
+        enable: function() {
+            return this.el.removeAttr('disabled');
         },
 
         // Disables the dropdown
-        _disable: function() {
-            this.el.attr('disabled', 'disabled');
+        disable: function() {
+            return this.el.attr('disabled', 'disabled');
         },
 
         // Checks if required dropdowns have value
@@ -118,11 +120,9 @@
         },
 
         getRequiredValues: function() {
-            var self = this;
-
             var data = {};
-            if(self.requiredDropdowns) {
-                $.each(self.requiredDropdowns, function() {
+            if(this.requiredDropdowns) {
+                $.each(this.requiredDropdowns, function() {
                     var instance = $(this).data('plugin_cascadingDropdown');
                     if(instance.name) {
                         data[instance.name] = instance.el.val();
@@ -138,17 +138,17 @@
             var self = this;
 
             // Disable it first
-            self._disable();
+            self.disable();
 
             // If required dropdowns have no value, return
             if(!self._requirementsMet()) {
-                return;
+                return self.el;
             }
 
             // If source isn't defined, it's most likely a static dropdown, so just enable it
             if(!self.source) {
-                self._enable();
-                return;
+                self.enable();
+                return self.el;
             }
 
             // Fetch data from required dropdowns
@@ -156,6 +156,8 @@
 
             // Pass it to defined source for processing
             self.source(data, self._response());
+
+            return self.el;
         },
 
         _response: function(items) {
@@ -170,6 +172,7 @@
         _renderItems: function(items) {
             var self = this;
 
+            // Remove all dropdown items and restore to initial state
             self.el.children('option').remove();
             self.el.append(self.originalOptions);
 
@@ -177,46 +180,123 @@
                 return;
             }
 
-            var triggerChange = false;
+            var selected;
 
+            // Add all items as dropdown item
             $.each(items, function(index, item) {
                 var selectedAttr = '';
                 if(item.selected) {
-                    selectedAttr = ' selected="selected"';
-                    triggerChange = true;
+                    selected = item;
                 }
 
                 self.el.append('<option value="' + item.value + '"' + selectedAttr + '>' + item.label + '</option>');
             });
 
-            self._enable();
+            // Enable the dropdown
+            self.enable();
 
-            triggerChange && self.el.change();
+            // If a selected item exists, set it as default
+            selected && self.setSelected(selected.value.toString());
+        },
+
+        // Sets the selected dropdown item
+        setSelected: function(indexOrValue, triggerChange) {
+            var self = this,
+                dropdownItems = self.el.find('option');
+
+            // Trigger change event by default
+            if(typeof triggerChange === 'undefined') {
+                triggerChange = true;
+            }
+
+            // If given value is a string, get the index where it appears in the dropdown
+            if(typeof indexOrValue === 'string') {
+                indexOrValue = dropdownItems.index(dropdownItems.filter('[value="' + indexOrValue +'"]')[0]);
+            }
+
+            // If index is undefined or out of bounds, do nothing
+            if(indexOrValue === undefined || indexOrValue < 0 || indexOrValue > dropdownItems.length) {
+                return;
+            }
+
+            // Set the dropdown item
+            self.el[0].selectedIndex = indexOrValue;
+
+            if(!triggerChange) {
+                return;
+            }
+
+            // Trigger change event
+            self.el.change();
+
+            return self.el;
         }
     };
 
-    // jQuery plugin declaration
-    $.fn.cascadingDropdown = function(options) {
-        return this.each(function() {
-            var parent = this;
-            var dropdowns = $();
-            $.each(options.selectBoxes, function() {
-                var dropdown = $(this.selector, parent).data('plugin_cascadingDropdown', new Dropdown(this, parent));
-                dropdowns.push(dropdown.get(0));
+    function CascadingDropdown(element, options) {
+        this.el = $(element);
+        this.options = $.extend({ selectBoxes: [] }, options);
+        this._init();
+    }
+
+    CascadingDropdown.prototype = {
+        _init: function() {
+            var self = this;
+
+            self.dropdowns = $();
+
+            // Init dropdowns
+            $.each(self.options.selectBoxes, function(index, item) {
+                var dropdown = $(this.selector, self.el).data('plugin_cascadingDropdown', new Dropdown(this, self));
+                dropdown && self.dropdowns.push(dropdown[0]);
             });
 
-            if(options.onChange) {
-                dropdowns.change(function() {
-                    var data = {};
-                    $.each(dropdowns, function(index, item) {
-                        var instance = $(this).data('plugin_cascadingDropdown');
-                        if(instance.name) {
-                            data[instance.name] = instance.el.val();
-                        }
-                    });
-                    options.onChange.call(this, data);
+            // Init event handlers
+            if(typeof self.options.onChange === 'function') {
+                self.dropdowns.change(function(event) {
+                    self.options.onChange.call(self, event, self.getValues());
                 });
             }
-        });
+
+            if(typeof self.options.onReady === 'function') {
+                self.el.bind('ready', function(event) {
+                    self.options.onReady.call(self, event, self.getValues());    
+                }).trigger('ready');
+            }
+        },
+
+        // Fetches the values from all dropdowns in this group
+        getValues: function() {
+            var values = {};
+
+            // Build the object and insert values from instances with name
+            $.each(this.dropdowns, function(index, item) {
+                var instance = $(this).data('plugin_cascadingDropdown');
+                if(instance.name) {
+                    values[instance.name] = instance.el.val();
+                }
+            });
+
+            return values;
+        }
+    }
+
+    // jQuery plugin declaration
+    $.fn.cascadingDropdown = function(methodOrOptions) {
+        var $this = $(this),
+            args = arguments,
+            instance = $this.data('plugin_cascadingDropdown');
+
+        if(typeof methodOrOptions === 'object' || !methodOrOptions) {
+            return !instance && $this.data('plugin_cascadingDropdown', new CascadingDropdown(this, methodOrOptions));
+        } else if(typeof methodOrOptions === 'string') {
+            if(!instance) {
+                $.error('Cannot call method ' + methodOrOptions + ' before init.');
+            } else if(instance[methodOrOptions]) {
+                return instance[methodOrOptions].apply(instance, Array.prototype.slice.call(args, 1))
+            }
+        } else {
+            $.error('Method ' + methodOrOptions + ' does not exist in jQuery.cascadingDropdown');
+        }
     };
 })(jQuery);
