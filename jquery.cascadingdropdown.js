@@ -1,5 +1,5 @@
 ﻿/* 
- *   jQuery Cascading Dropdown Plugin 1.2.0
+ *   jQuery Cascading Dropdown Plugin 1.2.1
  *   https://github.com/dnasir/jquery-cascading-dropdown
  *
  *   Copyright 2013, Dzulqarnain Nasir
@@ -26,7 +26,7 @@
         this.name = this.options.paramName || this.el.attr('name');
         this.requiredDropdowns = options.requires && options.requires.length ? $(options.requires.join(','), parent.el) : null;
         this.originalOptions = this.el.children('option');
-        this._create();
+        this.initialised = false;
     }
 
     // Methods
@@ -48,17 +48,16 @@
 
             self._initSource();
             self.update();
-            self.el.trigger('ready')
         },
 
         // Enables the dropdown
         enable: function() {
-            return this.el.removeAttr('disabled');
+            return this.el.removeAttr('disabled').trigger('enabled');
         },
 
         // Disables the dropdown
         disable: function() {
-            return this.el.attr('disabled', 'disabled');
+            return this.el.attr('disabled', 'disabled').trigger('disabled');
         },
 
         // Checks if required dropdowns have value
@@ -142,12 +141,14 @@
 
             // If required dropdowns have no value, return
             if(!self._requirementsMet()) {
+                self._triggerReady();
                 return self.el;
             }
 
             // If source isn't defined, it's most likely a static dropdown, so just enable it
             if(!self.source) {
                 self.enable();
+                self._triggerReady();
                 return self.el;
             }
 
@@ -177,6 +178,7 @@
             self.el.append(self.originalOptions);
 
             if(!items || !items.length) {
+                self._triggerReady();
                 return;
             }
 
@@ -197,6 +199,16 @@
 
             // If a selected item exists, set it as default
             selected && self.setSelected(selected.value.toString());
+
+            self._triggerReady();
+        },
+
+        // Trigger the ready event when instance is initialised for the first time
+        _triggerReady: function() {
+            if(!this.initialised) {
+                this.initialised = true;
+                this.el.trigger('ready');
+            }
         },
 
         // Sets the selected dropdown item
@@ -243,26 +255,46 @@
         _init: function() {
             var self = this;
 
-            self.dropdowns = $();
-
-            // Init dropdowns
-            $.each(self.options.selectBoxes, function(index, item) {
-                var dropdown = $(this.selector, self.el).data('plugin_cascadingDropdown', new Dropdown(this, self));
-                dropdown && self.dropdowns.push(dropdown[0]);
-            });
+            // Instance array
+            self.dropdowns = [];
+            
+            var dropdowns = $($.map(self.options.selectBoxes, function(item) {
+                return item.selector;
+            }).join(','), self.el);
 
             // Init event handlers
+            var counter = 0;
+            function readyEventHandler(event) {
+                if(++counter == dropdowns.length) { // Once all dropdowns are ready, unbind the event handler, and execute onReady
+                    dropdowns.unbind('ready', readyEventHandler);
+                    self.options.onReady.call(self, event, self.getValues());
+                }
+            }
+            
+            if(typeof self.options.onReady === 'function') {
+                dropdowns.bind('ready', readyEventHandler);
+            }
+
             if(typeof self.options.onChange === 'function') {
-                self.dropdowns.change(function(event) {
+                dropdowns.change(function(event) {
                     self.options.onChange.call(self, event, self.getValues());
                 });
             }
 
-            if(typeof self.options.onReady === 'function') {
-                self.el.bind('ready', function(event) {
-                    self.options.onReady.call(self, event, self.getValues());    
-                }).trigger('ready');
-            }
+            // Init dropdowns
+            $.each(self.options.selectBoxes, function(index, item) {
+                // Create the instance
+                var instance = new Dropdown(this, self);
+
+                // Assign it to the element as a data property
+                $(this.selector, self.el).data('plugin_cascadingDropdown', instance);
+
+                // Insert it into the dropdown instance array
+                self.dropdowns.push(instance);
+
+                // Call the create method
+                instance._create();
+            });
         },
 
         // Fetches the values from all dropdowns in this group
@@ -270,8 +302,7 @@
             var values = {};
 
             // Build the object and insert values from instances with name
-            $.each(this.dropdowns, function(index, item) {
-                var instance = $(this).data('plugin_cascadingDropdown');
+            $.each(this.dropdowns, function(index, instance) {
                 if(instance.name) {
                     values[instance.name] = instance.el.val();
                 }

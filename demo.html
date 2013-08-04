@@ -257,7 +257,7 @@
 		// do stuff
 		// dropdownData is an object with values from all the dropdowns in this group
 	},
-	onReady: function(dropdownData) {
+	onReady: function(event, dropdownData) {
 		// do stuff
 	}
 });</pre>
@@ -354,7 +354,6 @@
 							});
 						},
 						onChange: function(event, value, requiredValues){
-							console.log(event)
 							var ajaxData = requiredValues;
 							ajaxData[this.el.attr('name')] = value;
 							$.getJSON('/api/phones', ajaxData, function(data) {
