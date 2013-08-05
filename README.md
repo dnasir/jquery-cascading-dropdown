@@ -141,6 +141,16 @@ If this value is set to false, this dropdown will be enabled if any one of the r
 
 Required dropdown value parameter name used in Ajax requests. If this value is not set, the plugin will use the dropdown name attribute. If neither this parameter nor the name attribute is set, this dropdown will not be taken into account in any Ajax request.
 
+##### selected (string|integer)
+
+    selected: 'red'
+
+    selected: 2
+
+<sub>Added: 1.1.5</sub>
+
+Sets the default dropdown item on initialisation. The value can be a the value of the targeted dropdown item, or its index value. 
+
 ##### onChange (eventHandler)
 
     onChange: function(event, value, requiredValues) { }

@@ -146,6 +146,11 @@
             // Disable it first
             self.disable();
 
+            // Set selected dropdown item if defined
+            if(!self.initialised) {
+                self.options.selected && self.setSelected(self.options.selected);
+            }
+
             // If required dropdowns have no value, return
             if(!self._requirementsMet()) {
                 self._triggerReady();
@@ -248,12 +253,10 @@
             // Set the dropdown item
             self.el[0].selectedIndex = indexOrValue;
 
-            if(!triggerChange) {
-                return;
-            }
-
             // Trigger change event
-            self.el.change();
+            if(triggerChange) {
+                self.el.change();
+            }
 
             return self.el;
         }
@@ -268,6 +271,8 @@
     CascadingDropdown.prototype = {
         _init: function() {
             var self = this;
+
+            self.pending = 0;
 
             // Instance array
             self.dropdowns = [];
@@ -284,15 +289,17 @@
                     self.options.onReady.call(self, event, self.getValues());
                 }
             }
+
+            function changeEventHandler(event) {
+                self.options.onChange.call(self, event, self.getValues());
+            }
             
             if(typeof self.options.onReady === 'function') {
                 dropdowns.bind('ready', readyEventHandler);
             }
 
             if(typeof self.options.onChange === 'function') {
-                dropdowns.change(function(event) {
-                    self.options.onChange.call(self, event, self.getValues());
-                });
+                dropdowns.bind('change', changeEventHandler);
             }
 
             // Init dropdowns

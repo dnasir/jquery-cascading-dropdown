@@ -54,6 +54,8 @@
 			<h4>Basic</h4>
 			<p>This is a basic dropdown setup where the second dropdown is dependent on the first dropdown having a value, and the third dropdown is dependent on either the first or second one having a value.</p>
 
+			<p>This example also shows how you can set the selected dropdown item when you initialise the plugin. This can be done either in code, or by including the HTML selected attribute on the targeted dropdown item.</p>
+
 			<div id="example1" class="bs-docs-example">
 				<h4>Phone finder</h4>
 
@@ -66,7 +68,7 @@
 				</select>
 				<select class="step2" name="resolution">
 					<option value="">Screen resolution</option>
-					<option value="540">540p</option>
+					<option value="540" selected>540p</option>
 					<option value="720">720p</option>
 					<option value="1080">1080p</option>
 				</select>
@@ -93,7 +95,8 @@
 <pre class="brush: js">$('#example1').cascadingDropdown({
 	selectBoxes: [
 		{
-			selector: '.step1'
+			selector: '.step1',
+			selected: '4.3'
 		},
 		{
 			selector: '.step2',
@@ -213,9 +216,6 @@
 				</select>
 				<select class="step2" name="resolution">
 					<option value="">Screen resolution</option>
-					<option value="540">540p</option>
-					<option value="720">720p</option>
-					<option value="1080">1080p</option>
 				</select>
 				<select class="step3" name="storage">
 					<option value="">Storage size</option>
@@ -297,7 +297,8 @@
 			$('#example1').cascadingDropdown({
 				selectBoxes: [
 					{
-						selector: '.step1'
+						selector: '.step1',
+						selected: '4.3'
 					},
 					{
 						selector: '.step2',
@@ -379,7 +380,18 @@
 						selector: '.step1'
 					},
 					{
-						selector: '.step2'
+						selector: '.step2',
+						source: function(request, response) {
+							$.getJSON('/api/resolutions', request, function(data) {
+								response($.map(data, function(item, index) {
+									return {
+										label: item + 'p',
+										value: item,
+										selected: index == 0
+									};
+								}));
+							});
+						}
 					},
 					{
 						selector: '.step3',
