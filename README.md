@@ -47,6 +47,14 @@ An event that is triggered when the plugin is completely initialised. The event 
 
 An event that is triggered whenever the value of a dropdown in a particular group is changed. The event handler will be provided with the event object, and an object containing the current values of all the dropdowns in the group.
 
+#### isLoadingClassName (string)
+
+<sub>Added: 1.2.2</sub>
+
+    isLoadingClassName: 'cascading-dropdown-loading'
+
+This overrides the default value for the class name applied to the dropdown element during Ajax calls.
+
 #### selectBoxes
 
     selectBoxes: [
