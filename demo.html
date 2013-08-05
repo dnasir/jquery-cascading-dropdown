@@ -36,6 +36,11 @@
 				-moz-border-radius: 4px 0 4px 0;
 				border-radius: 4px 0 4px 0;
         	}
+
+        	.cascading-dropdown-loading {
+        		cursor: wait;
+        		background: url('ajax-loader.gif') 85% center no-repeat transparent;
+        	}
         </style>
         <link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/styles/shCore.css">
         <link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/styles/shThemeDefault.css">
@@ -73,7 +78,7 @@
 					<option value="64">64 GB</option>
 				</select>
 
-				<h4>Matches</h4>
+				<h4>Matches <img src="ajax-loader.gif" data-bind="visible: loading" /></h4>
 				<ul data-bind="foreach: phones, visible: phones().length > 0">
 					<li>
 						<span data-bind="text: maker"></span>
@@ -129,7 +134,7 @@
 					<option value="">Storage size</option>
 				</select>
 
-				<h4>Matches</h4>
+				<h4>Matches <img src="ajax-loader.gif" data-bind="visible: loading" /></h4>
 				<ul data-bind="foreach: phones, visible: phones().length > 0">
 					<li>
 						<span data-bind="text: maker"></span>
@@ -216,7 +221,7 @@
 					<option value="">Storage size</option>
 				</select>
 
-				<h4>Matches</h4>
+				<h4>Matches <img src="ajax-loader.gif" data-bind="visible: loading" /></h4>
 				<ul data-bind="foreach: phones, visible: phones().length > 0">
 					<li>
 						<span data-bind="text: maker"></span>
@@ -275,21 +280,18 @@
 		<script type="text/javascript" src="ajax-mocks.js"></script>
 		<script type="text/javascript" src="jquery.cascadingdropdown.js"></script>
 		<script type="text/javascript">
-			var example1Array = ko.observableArray([]),
-				example2Array = ko.observableArray([]),
-				example3Array = ko.observableArray([]);
+			function viewmodel() {
+				this.phones = ko.observableArray([]);
+				this.loading = ko.observable(false);
+			}
 
-			ko.applyBindings({
-				phones: example1Array
-			}, document.getElementById('example1'));
+			var example1 = new viewmodel(),
+				example2 = new viewmodel(),
+				example3 = new viewmodel();
 
-			ko.applyBindings({
-				phones: example2Array
-			}, document.getElementById('example2'));
-
-			ko.applyBindings({
-				phones: example3Array
-			}, document.getElementById('example3'));
+			ko.applyBindings(example1, document.getElementById('example1'));
+			ko.applyBindings(example2, document.getElementById('example2'));
+			ko.applyBindings(example3, document.getElementById('example3'));
 
 			// Example 1
 			$('#example1').cascadingDropdown({
@@ -305,10 +307,13 @@
 						selector: '.step3',
 						requires: ['.step1', '.step2'],
 						onChange: function(event, value, requiredValues) {
+							example1.loading(true);
+
 							var ajaxData = requiredValues;
 							ajaxData[this.el.attr('name')] = value;
 							$.getJSON('/api/phones', ajaxData, function(data) {
-								example1Array(data);
+								example1.phones(data);
+								example1.loading(false);
 							});
 						}
 					}
@@ -353,11 +358,14 @@
 								}));
 							});
 						},
-						onChange: function(event, value, requiredValues){
+						onChange: function(event, value, requiredValues) {
+							example2.loading(true);
+
 							var ajaxData = requiredValues;
 							ajaxData[this.el.attr('name')] = value;
 							$.getJSON('/api/phones', ajaxData, function(data) {
-								example2Array(data);
+								example2.phones(data);
+								example2.loading(false);
 							});
 						}
 					}
@@ -391,13 +399,17 @@
 					}
 				],
 				onChange: function(event, dropdownData) {
+					example3.loading(true);
 					$.getJSON('/api/phones', dropdownData, function(data) {
-						example3Array(data);
+						example3.phones(data);
+						example3.loading(false);
 					});
 				},
 				onReady: function(event, dropdownData) {
+					example3.loading(true);
 					$.getJSON('/api/phones', dropdownData, function(data) {
-						example3Array(data);
+						example3.phones(data);
+						example3.loading(false);
 					});
 				}
 			});

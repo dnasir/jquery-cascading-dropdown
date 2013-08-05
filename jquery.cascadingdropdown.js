@@ -1,5 +1,5 @@
 ﻿/* 
- *   jQuery Cascading Dropdown Plugin 1.2.1
+ *   jQuery Cascading Dropdown Plugin 1.2.2
  *   https://github.com/dnasir/jquery-cascading-dropdown
  *
  *   Copyright 2013, Dzulqarnain Nasir
@@ -25,8 +25,7 @@
         this.options = $.extend({}, defaultOptions, options);
         this.name = this.options.paramName || this.el.attr('name');
         this.requiredDropdowns = options.requires && options.requires.length ? $(options.requires.join(','), parent.el) : null;
-        this.originalOptions = this.el.children('option');
-        this.initialised = false;
+        this.isLoadingClassName = this.options.isLoadingClassName || parent.options.isLoadingClassName || 'cascading-dropdown-loading';
     }
 
     // Methods
@@ -34,6 +33,11 @@
         _create: function() {
             var self = this;
 
+            self.pending = 0;
+            self.initialised = false;
+            self.originalDropdownItems = self.el.children('option');
+
+            // Init event handlers
             if(typeof self.options.onChange === 'function') {
                 self.el.change(function(event) {
                     self.options.onChange.call(self, event, self.el.val(), self.getRequiredValues());
@@ -46,7 +50,10 @@
                 });
             }
 
+            // Init source
             self._initSource();
+
+            // Call update
             self.update();
         },
 
@@ -156,6 +163,8 @@
             var data = self.getRequiredValues();
 
             // Pass it to defined source for processing
+            self.pending++;
+            self.el.addClass(self.isLoadingClassName);
             self.source(data, self._response());
 
             return self.el;
@@ -166,6 +175,11 @@
 
             return function(items) {
                 self._renderItems(items);
+
+                self.pending--;
+                if(!self.pending) {
+                    self.el.removeClass(self.isLoadingClassName);
+                }
             }
         },
 
@@ -175,7 +189,7 @@
 
             // Remove all dropdown items and restore to initial state
             self.el.children('option').remove();
-            self.el.append(self.originalOptions);
+            self.el.append(self.originalDropdownItems);
 
             if(!items || !items.length) {
                 self._triggerReady();

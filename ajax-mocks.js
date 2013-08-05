@@ -124,6 +124,7 @@ function asc(a, b) {
 $.mockjax({
 	url: '/api/screens',
 	contentType: 'application/json; charset=utf-8',
+	responseTime: 1000,
 	response: function(settings){
 		this.responseText = JSON.stringify(getScreens(parseFloat(settings.data.resolution), parseFloat(settings.data.storage)));
 	}
@@ -132,6 +133,7 @@ $.mockjax({
 $.mockjax({
 	url: '/api/resolutions',
 	contentType: 'application/json; charset=utf-8',
+	responseTime: 1000,
 	response: function(settings){
 		this.responseText = JSON.stringify(getResolutions(parseFloat(settings.data.screen), parseFloat(settings.data.storage)));
 	}
@@ -140,6 +142,7 @@ $.mockjax({
 $.mockjax({
 	url: '/api/storages',
 	contentType: 'application/json; charset=utf-8',
+	responseTime: 1000,
 	response: function(settings){
 		this.responseText = JSON.stringify(getStorages(parseFloat(settings.data.screen), parseFloat(settings.data.resolution)));
 	}
@@ -148,6 +151,7 @@ $.mockjax({
 $.mockjax({
 	url: '/api/phones',
 	contentType: 'application/json; charset=utf-8',
+	responseTime: 1000,
 	response: function(settings){
 		this.responseText = JSON.stringify(getPhones(parseFloat(settings.data.screen), parseFloat(settings.data.resolution), parseFloat(settings.data.storage)));
 	}
