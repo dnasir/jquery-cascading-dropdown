@@ -217,7 +217,8 @@
             self.enable();
 
             // If a selected item exists, set it as default
-            selected && self.setSelected(selected.value.toString());
+            ( selected && self.setSelected(selected.value.toString()) )
+		        || ( self.options.selected && self.setSelected(self.options.selected) );
 
             self._triggerReady();
         },
