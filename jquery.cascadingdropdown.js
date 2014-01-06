@@ -1,5 +1,5 @@
 ﻿/* 
- *   jQuery Cascading Dropdown Plugin 1.2.2
+ *   jQuery Cascading Dropdown Plugin 1.2.3
  *   https://github.com/dnasir/jquery-cascading-dropdown
  *
  *   Copyright 2013, Dzulqarnain Nasir
@@ -59,12 +59,12 @@
 
         // Enables the dropdown
         enable: function() {
-            return this.el.removeAttr('disabled').trigger('enabled');
+            return this.el.removeAttr('disabled').triggerHandler('enabled');
         },
 
         // Disables the dropdown
         disable: function() {
-            return this.el.attr('disabled', 'disabled').trigger('disabled');
+            return this.el.attr('disabled', 'disabled').triggerHandler('disabled');
         },
 
         // Checks if required dropdowns have value
