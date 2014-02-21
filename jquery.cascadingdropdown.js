@@ -153,6 +153,7 @@
 
             // If required dropdowns have no value, return
             if(!self._requirementsMet()) {
+                self.setSelected(0);
                 self._triggerReady();
                 return self.el;
             }
@@ -163,6 +164,8 @@
                 self._triggerReady();
                 return self.el;
             }
+
+            self.setSelected(0);
 
             // Fetch data from required dropdowns
             var data = self.getRequiredValues();
@@ -242,7 +245,7 @@
 
             // If given value is a string, get the index where it appears in the dropdown
             if(typeof indexOrValue === 'string') {
-                indexOrValue = dropdownItems.index(dropdownItems.filter('[value="' + indexOrValue +'"]')[0]);
+                indexOrValue = dropdownItems.index(dropdownItems.filter(function() { return this.value === indexOrValue; })[0]);
             }
 
             // If index is undefined or out of bounds, do nothing
