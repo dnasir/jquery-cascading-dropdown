@@ -165,7 +165,13 @@
                 return self.el;
             }
 
-            self.setSelected(0);
+            // Reset the dropdown value so we don't trigger a false call
+            var firstItem = self.el.children('option')[0];
+            if(firstItem && firstItem.value === '') {
+                self.setSelected(0);
+            } else {
+                self.el.val('').change();
+            }
 
             // Fetch data from required dropdowns
             var data = self.getRequiredValues();
