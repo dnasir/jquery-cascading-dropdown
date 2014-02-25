@@ -1,5 +1,5 @@
 ﻿/* 
- *   jQuery Cascading Dropdown Plugin 1.2.3
+ *   jQuery Cascading Dropdown Plugin 1.2.4
  *   https://github.com/dnasir/jquery-cascading-dropdown
  *
  *   Copyright 2013, Dzulqarnain Nasir
@@ -40,7 +40,8 @@
             // Init event handlers
             if(typeof self.options.onChange === 'function') {
                 self.el.change(function(event) {
-                    self.options.onChange.call(self, event, self.el.val(), self.getRequiredValues());
+                    var requirementsMet = self._requirementsMet() && self.el[0].value;
+                    self.options.onChange.call(self, event, self.el.val(), self.getRequiredValues(), requirementsMet);
                 });
             }
 
@@ -166,12 +167,7 @@
             }
 
             // Reset the dropdown value so we don't trigger a false call
-            var firstItem = self.el.children('option')[0];
-            if(firstItem && firstItem.value === '') {
-                self.setSelected(0);
-            } else {
-                self.el.val('').change();
-            }
+            self.el.val('').change();
 
             // Fetch data from required dropdowns
             var data = self.getRequiredValues();
@@ -235,7 +231,7 @@
         _triggerReady: function() {
             if(!this.initialised) {
                 this.initialised = true;
-                this.el.trigger('ready');
+                this.el.triggerHandler('ready');
             }
         },
 

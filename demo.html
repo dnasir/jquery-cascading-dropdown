@@ -107,8 +107,11 @@
 			requires: ['.step1', '.step2'],
 			onChange: function(event, value, requiredValues) {
 				// do stuff
+
+				// event is the change event object for the current dropdown
 				// value is the current dropdown value
 				// requiredValues is an object with required dropdown values
+				// requirementsMet is a boolean value to indicate if all requirements (including current dropdown having a value) have been met
 			}
 		}
 	]
@@ -191,7 +194,7 @@
 					}));
 				});
 			},
-			onChange: function(event, value, requiredValues){
+			onChange: function(event, value, requiredValues, requirementsMet){
 				// do stuff
 			}
 		}
@@ -307,7 +310,9 @@
 					{
 						selector: '.step3',
 						requires: ['.step1', '.step2'],
-						onChange: function(event, value, requiredValues) {
+						onChange: function(event, value, requiredValues, requirementsMet) {
+							if(!requirementsMet) return;
+
 							example1.loading(true);
 
 							var ajaxData = requiredValues;
@@ -359,7 +364,9 @@
 								}));
 							});
 						},
-						onChange: function(event, value, requiredValues) {
+						onChange: function(event, value, requiredValues, requirementsMet) {
+							if(!requirementsMet) return;
+
 							example2.loading(true);
 
 							var ajaxData = requiredValues;
