@@ -1,5 +1,5 @@
 ﻿/* 
- *   jQuery Cascading Dropdown Plugin 1.2.3
+ *   jQuery Cascading Dropdown Plugin 1.2.4
  *   https://github.com/dnasir/jquery-cascading-dropdown
  *
  *   Copyright 2013, Dzulqarnain Nasir
@@ -40,7 +40,8 @@
             // Init event handlers
             if(typeof self.options.onChange === 'function') {
                 self.el.change(function(event) {
-                    self.options.onChange.call(self, event, self.el.val(), self.getRequiredValues());
+                    var requirementsMet = self._requirementsMet() && self.el[0].value;
+                    self.options.onChange.call(self, event, self.el.val(), self.getRequiredValues(), requirementsMet);
                 });
             }
 
@@ -153,6 +154,7 @@
 
             // If required dropdowns have no value, return
             if(!self._requirementsMet()) {
+                self.setSelected(0);
                 self._triggerReady();
                 return self.el;
             }
@@ -163,6 +165,9 @@
                 self._triggerReady();
                 return self.el;
             }
+
+            // Reset the dropdown value so we don't trigger a false call
+            self.el.val('').change();
 
             // Fetch data from required dropdowns
             var data = self.getRequiredValues();
@@ -226,7 +231,7 @@
         _triggerReady: function() {
             if(!this.initialised) {
                 this.initialised = true;
-                this.el.trigger('ready');
+                this.el.triggerHandler('ready');
             }
         },
 
@@ -242,7 +247,7 @@
 
             // If given value is a string, get the index where it appears in the dropdown
             if(typeof indexOrValue === 'string') {
-                indexOrValue = dropdownItems.index(dropdownItems.filter('[value="' + indexOrValue +'"]')[0]);
+                indexOrValue = dropdownItems.index(dropdownItems.filter(function() { return this.value === indexOrValue; })[0]);
             }
 
             // If index is undefined or out of bounds, do nothing
