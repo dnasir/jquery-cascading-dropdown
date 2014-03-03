@@ -153,11 +153,12 @@ Sets the default dropdown item on initialisation. The value can be a the value o
 
 ##### onChange (eventHandler)
 
-    onChange: function(event, value, requiredValues) { }
+    onChange: function(event, value, requiredValues, requirementsMet) { }
 
 <sub>Added: 1.0.0</sub>
+<sub>Updated: 1.1.6</sub>
 
-Event handler triggered when the dropdown value is changed. The event handler is passed the event object, the value of the current dropdown, and an object containing the values of all the required dropdowns.
+Event handler triggered when the dropdown value is changed. The event handler is passed the event object, the value of the current dropdown, and an object containing the values of all the required dropdowns. A boolean value indicating whether the requirements for a particular dropdown have been met or not is also passed.
 
 ## Server-side implementation
 
