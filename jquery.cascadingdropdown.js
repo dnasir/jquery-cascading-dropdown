@@ -1,5 +1,5 @@
 ﻿/* 
- *   jQuery Cascading Dropdown Plugin 1.2.4
+ *   jQuery Cascading Dropdown Plugin 1.2.5
  *   https://github.com/dnasir/jquery-cascading-dropdown
  *
  *   Copyright 2013, Dzulqarnain Nasir
