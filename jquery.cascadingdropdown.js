@@ -96,7 +96,8 @@
                     response($.map(self.options.source, function(item) {
                         return {
                             label: item.label || item.value || item,
-                            value: item.value || item.label || item
+                            value: item.value || item.label || item,
+                            selected: item.selected
                         };
                     }));
                 };
