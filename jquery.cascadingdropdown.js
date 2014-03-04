@@ -1,5 +1,5 @@
 ﻿/* 
- *   jQuery Cascading Dropdown Plugin 1.2.4
+ *   jQuery Cascading Dropdown Plugin 1.2.5
  *   https://github.com/dnasir/jquery-cascading-dropdown
  *
  *   Copyright 2013, Dzulqarnain Nasir
@@ -96,11 +96,12 @@
                     response($.map(self.options.source, function(item) {
                         return {
                             label: item.label || item.value || item,
-                            value: item.value || item.label || item
+                            value: item.value || item.label || item,
+                            selected: item.selected
                         };
                     }));
                 };
-            } else if ( typeof self.options.source === "string" ) {
+            } else if ( typeof self.options.source === 'string' ) {
                 var url = self.options.source;
 
                 this.source = function(request, response) {
@@ -146,11 +147,6 @@
 
             // Disable it first
             self.disable();
-
-            // Set selected dropdown item if defined
-            if(!self.initialised) {
-                self.options.selected && self.setSelected(self.options.selected);
-            }
 
             // If required dropdowns have no value, return
             if(!self._requirementsMet()) {
@@ -229,10 +225,13 @@
 
         // Trigger the ready event when instance is initialised for the first time
         _triggerReady: function() {
-            if(!this.initialised) {
-                this.initialised = true;
-                this.el.triggerHandler('ready');
-            }
+            if(this.initialised) return;
+
+            // Set selected dropdown item if defined
+            this.options.selected && this.setSelected(this.options.selected);
+
+            this.initialised = true;
+            this.el.triggerHandler('ready');
         },
 
         // Sets the selected dropdown item
