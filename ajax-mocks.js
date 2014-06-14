@@ -1,77 +1,107 @@
 // Some mockjax code to simulate Ajax calls
 var phoneList = [
-{
-	maker: 'HTC',
-	model: 'One S',
-	screen: 4.3,
-	resolution: 540,
-	storage: [8, 16]
-},
-{
-	maker: 'Samsung',
-	model: 'Galaxy S4',
-	screen: 5,
-	resolution: 1080,
-	storage: [16, 32, 64]
-},
-{
-	maker: 'HTC',
-	model: 'One',
-	screen: 4.7,
-	resolution: 1080,
-	storage: [32, 64]
-},
-{
-	maker: 'Motorola',
-	model: 'Droid 4',
-	screen: 4,
-	resolution: 540,
-	storage: [8]
-},
-{
-	maker: 'Motorola',
-	model: 'Droid RAZR HD',
-	screen: 4.7,
-	resolution: 720,
-	storage: [16]
-},
-{
-	maker: 'LG',
-	model: 'Optimus 4X HD',
-	screen: 4.7,
-	resolution: 720,
-	storage: [16]
-},
-{
-	maker: 'HTC',
-	model: 'Butterfly',
-	screen: 5,
-	resolution: 1080,
-	storage: [16]
-},
-{
-	maker: 'Motorola',
-	model: 'Moto X',
-	screen: 4.7,
-	resolution: 720,
-	storage: [16, 32]
-},
+	{
+		maker: 'HTC',
+		model: 'One S',
+		screen: 4.3,
+		resolution: 540,
+		storage: [8, 16]
+	},
+	{
+		maker: 'Samsung',
+		model: 'Galaxy S4',
+		screen: 5,
+		resolution: 1080,
+		storage: [16, 32, 64]
+	},
+	{
+		maker: 'HTC',
+		model: 'One',
+		screen: 4.7,
+		resolution: 1080,
+		storage: [32, 64]
+	},
+	{
+		maker: 'Motorola',
+		model: 'Droid 4',
+		screen: 4,
+		resolution: 540,
+		storage: [8]
+	},
+	{
+		maker: 'Motorola',
+		model: 'Droid RAZR HD',
+		screen: 4.7,
+		resolution: 720,
+		storage: [16]
+	},
+	{
+		maker: 'LG',
+		model: 'Optimus 4X HD',
+		screen: 4.7,
+		resolution: 720,
+		storage: [16]
+	},
+	{
+		maker: 'HTC',
+		model: 'Butterfly',
+		screen: 5,
+		resolution: 1080,
+		storage: [16]
+	},
+	{
+		maker: 'Motorola',
+		model: 'Moto X',
+		screen: 4.7,
+		resolution: 720,
+		storage: [16, 32]
+	}
 ];
 
+function arrayIntersect(a, b) {
+    return $.grep(a, function(i) {
+        return $.inArray(i, b) > -1;
+    });
+}
+
+function arrayToInt(array) {
+	var output = [];
+
+	for(var i=0;i<array.length;i++) {
+		if(array[i] && !isNaN(+array[i])) output.push(+array[i]);
+	}
+
+	return output;
+}
+
+function arrayToFloat(array) {
+	var output = [];
+
+	for(var i=0;i<array.length;i++) {
+		if(array[i] && !isNaN(parseFloat(array[i]))) output.push(parseFloat(array[i]));
+	}
+
+	return output;
+}
+
 function getPhones(screen, resolution, storage) {
+	var _screen = arrayToFloat([].concat(screen)),
+		_resolution = arrayToInt([].concat(resolution)),
+		_storage = arrayToInt([].concat(storage));
+
 	return $.grep(phoneList, function(item, index) {
 		var s = true, r = true, st = true;
 
-		if(screen) {
-			s = item.screen == screen;
+		if(_screen.length) {
+			s = $.inArray(item.screen, _screen) > -1;
 		}
 
-		if(resolution) {
-			r = item.resolution == resolution;
+		if(_resolution.length) {
+			r = $.inArray(item.resolution, _resolution) > -1;
 		}
 
-		if(storage) {
-			st = item.storage.indexOf(storage) > -1;
+		if(_storage.length) {
+			st = arrayIntersect(item.storage, _storage).length > 0;
 		}
 
 		return !!(s && r && st);
@@ -126,7 +156,7 @@ $.mockjax({
 	contentType: 'application/json; charset=utf-8',
 	responseTime: 1000,
 	response: function(settings){
-		this.responseText = JSON.stringify(getScreens(parseFloat(settings.data.resolution), parseFloat(settings.data.storage)));
+		this.responseText = JSON.stringify(getScreens(settings.data.resolution, settings.data.storage));
 	}
 });
 
@@ -135,7 +165,7 @@ $.mockjax({
 	contentType: 'application/json; charset=utf-8',
 	responseTime: 1000,
 	response: function(settings){
-		this.responseText = JSON.stringify(getResolutions(parseFloat(settings.data.screen), parseFloat(settings.data.storage)));
+		this.responseText = JSON.stringify(getResolutions(settings.data.screen, settings.data.storage));
 	}
 });
 
@@ -144,7 +174,7 @@ $.mockjax({
 	contentType: 'application/json; charset=utf-8',
 	responseTime: 1000,
 	response: function(settings){
-		this.responseText = JSON.stringify(getStorages(parseFloat(settings.data.screen), parseFloat(settings.data.resolution)));
+		this.responseText = JSON.stringify(getStorages(settings.data.screen, settings.data.resolution));
 	}
 });
 
@@ -153,6 +183,6 @@ $.mockjax({
 	contentType: 'application/json; charset=utf-8',
 	responseTime: 1000,
 	response: function(settings){
-		this.responseText = JSON.stringify(getPhones(parseFloat(settings.data.screen), parseFloat(settings.data.resolution), parseFloat(settings.data.storage)));
+		this.responseText = JSON.stringify(getPhones(settings.data.screen, settings.data.resolution, settings.data.storage));
 	}
 });

@@ -273,6 +273,35 @@
 
 			<br />
 
+			<h4>Multiple select</h4>
+			<p>You can enable multiple select by including the <code>multiple</code> attribute. The value for the dropdown will then be an array of strings instead of a string. However, you will need to ensure that your backend service supports this type of data.</p>
+
+			<div id="example4" class="bs-docs-example">
+				<h4>Phone finder</h4>
+
+				<select class="step1" name="screen" multiple="multiple">
+					<option value="4" selected="selected">4.0"</option>
+					<option value="4.3">4.3"</option>
+					<option value="4.7">4.7"</option>
+					<option value="5">5.0"</option>
+				</select>
+				<select class="step2" name="resolution" multiple="multiple">
+				</select>
+				<select class="step3" name="storage" multiple="multiple">
+				</select>
+
+				<h4>Matches <img src="ajax-loader.gif" data-bind="visible: loading" /></h4>
+				<ul data-bind="foreach: phones, visible: phones().length > 0">
+					<li>
+						<span data-bind="text: maker"></span>
+						<span data-bind="text: model"></span>
+					</li>
+				</ul>
+				<p data-bind="visible: phones().length == 0">No matches</p>
+			</div>
+
+			<br />
+
 			<p class="text-center"><small>Copyright &copy; 2013 <a href="http://dnasir.com">Dzulqarnain Nasir</a></small></p>
 		</div>
 
@@ -290,11 +319,13 @@
 
 			var example1 = new viewmodel(),
 				example2 = new viewmodel(),
-				example3 = new viewmodel();
+				example3 = new viewmodel(),
+				example4 = new viewmodel();
 
 			ko.applyBindings(example1, document.getElementById('example1'));
 			ko.applyBindings(example2, document.getElementById('example2'));
 			ko.applyBindings(example3, document.getElementById('example3'));
+			ko.applyBindings(example4, document.getElementById('example4'));
 
 			// Example 1
 			$('#example1').cascadingDropdown({
@@ -429,6 +460,59 @@
 					$.getJSON('/api/phones', dropdownData, function(data) {
 						example3.phones(data);
 						example3.loading(false);
+					});
+				}
+			});
+
+			// Example 4
+			$('#example4').cascadingDropdown({
+				selectBoxes: [
+					{
+						selector: '.step1'
+					},
+					{
+						selector: '.step2',
+						source: function(request, response) {
+							$.getJSON('/api/resolutions', request, function(data) {
+								response($.map(data, function(item, index) {
+									return {
+										label: item + 'p',
+										value: item,
+										selected: index == 0
+									};
+								}));
+							});
+						}
+					},
+					{
+						selector: '.step3',
+						requires: ['.step1', '.step2'],
+						requireAll: true,
+						source: function(request, response) {
+							$.getJSON('/api/storages', request, function(data) {
+								response($.map(data, function(item, index) {
+									return {
+										label: item + ' GB',
+										value: item,
+										selected: index == 0
+									};
+								}));
+							});
+						}
+					}
+				],
+				onChange: function(event, dropdownData) {
+					example4.loading(true);
+					$.getJSON('/api/phones', dropdownData, function(data) {
+						example4.phones(data);
+						example4.loading(false);
+					});
+				},
+				onReady: function(event, dropdownData) {
+					example4.loading(true);
+					$.getJSON('/api/phones', dropdownData, function(data) {
+						example4.phones(data);
+						example4.loading(false);
 					});
 				}
 			});
