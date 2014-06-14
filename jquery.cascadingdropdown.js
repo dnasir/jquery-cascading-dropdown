@@ -202,13 +202,13 @@
                 return;
             }
 
-            var selected;
+            var selected = new Array();
 
             // Add all items as dropdown item
             $.each(items, function(index, item) {
                 var selectedAttr = '';
                 if(item.selected) {
-                    selected = item;
+                    selected.push(item);
                 }
 
                 self.el.append('<option value="' + item.value + '"' + selectedAttr + '>' + item.label + '</option>');
@@ -218,7 +218,9 @@
             self.enable();
 
             // If a selected item exists, set it as default
-            selected && self.setSelected(selected.value.toString());
+            selected.forEach(function(entry) {
+                        self.setSelected(entry.value.toString());
+			});
 
             self._triggerReady();
         },
@@ -255,7 +257,7 @@
             }
 
             // Set the dropdown item
-            self.el[0].selectedIndex = indexOrValue;
+            self.el[0].options[indexOrValue].selected = true;
 
             // Trigger change event
             if(triggerChange) {
