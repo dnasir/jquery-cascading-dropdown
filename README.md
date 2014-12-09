@@ -1,6 +1,6 @@
 # jQuery Cascading Dropdown Plugin
 
-A simple and lighweight jQuery plugin for creating cascading dropdowns. 
+A simple and lighweight jQuery plugin for creating cascading dropdowns.
 
 [View Demo](http://dnasir.com/github/jquery-cascading-dropdown/demo.html)
 
@@ -28,7 +28,7 @@ Tells the plugin to use POST when sending Ajax request.
 
 <sub>Added: 1.1.2</sub>
 
-Tells the plugin to stringify (JSON.stringify) dropdown data for Ajax requests. Requires 
+Tells the plugin to stringify (JSON.stringify) dropdown data for Ajax requests. Requires
 [json2.js](https://github.com/douglascrockford/JSON-js) if you're planning to support older browsers.
 
 #### onReady (eventHandler)
@@ -114,6 +114,36 @@ Example JSON object
 
 It's also possible to include a property named 'selected' in the object to define a selected item.
 
+It is also possible to create option groups in the select by specifying a key (the group name) in the JSON.
+
+Example JSON object with groups
+
+    {
+      'My Group':
+        [
+            {
+              "label": "Item 1",
+              "value": "1"
+            },
+            {
+              "label": "Item 2",
+              "value": "2"
+            }
+        ],
+      'Another Group':
+        [
+            {
+              "label": "Item 3",
+              "value": "3"
+            },
+            {
+              "label": "Item 4",
+              "value": "4"
+            }
+        ]
+    }
+
+
 If the source parameter is not set, the plugin will simply enable the select box when requirements are met.
 
 ##### requires (array)
@@ -149,7 +179,7 @@ Required dropdown value parameter name used in Ajax requests. If this value is n
 
 <sub>Added: 1.1.5</sub>
 
-Sets the default dropdown item on initialisation. The value can be a the value of the targeted dropdown item, or its index value. 
+Sets the default dropdown item on initialisation. The value can be a the value of the targeted dropdown item, or its index value.
 
 ##### onChange (eventHandler)
 
