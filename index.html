@@ -39,7 +39,7 @@
 
         	.cascading-dropdown-loading {
         		cursor: wait;
-        		background: url('ajax-loader.gif') 85% center no-repeat transparent;
+        		background: url('res/ajax-loader.gif') 85% center no-repeat transparent;
         	}
         </style>
         <link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/styles/shCore.css">
@@ -80,7 +80,7 @@
 					<option value="64">64 GB</option>
 				</select>
 
-				<h4>Matches <img src="ajax-loader.gif" data-bind="visible: loading" /></h4>
+				<h4>Matches <img src="res/ajax-loader.gif" data-bind="visible: loading" /></h4>
 				<ul data-bind="foreach: phones, visible: phones().length > 0">
 					<li>
 						<span data-bind="text: maker"></span>
@@ -140,7 +140,7 @@
 					<option value="">Storage size</option>
 				</select>
 
-				<h4>Matches <img src="ajax-loader.gif" data-bind="visible: loading" /></h4>
+				<h4>Matches <img src="res/ajax-loader.gif" data-bind="visible: loading" /></h4>
 				<ul data-bind="foreach: phones, visible: phones().length > 0">
 					<li>
 						<span data-bind="text: maker"></span>
@@ -224,7 +224,7 @@
 					<option value="">Storage size</option>
 				</select>
 
-				<h4>Matches <img src="ajax-loader.gif" data-bind="visible: loading" /></h4>
+				<h4>Matches <img src="res/ajax-loader.gif" data-bind="visible: loading" /></h4>
 				<ul data-bind="foreach: phones, visible: phones().length > 0">
 					<li>
 						<span data-bind="text: maker"></span>
@@ -290,7 +290,7 @@
 				<select class="step3" name="storage" multiple="multiple">
 				</select>
 
-				<h4>Matches <img src="ajax-loader.gif" data-bind="visible: loading" /></h4>
+				<h4>Matches <img src="res/ajax-loader.gif" data-bind="visible: loading" /></h4>
 				<ul data-bind="foreach: phones, visible: phones().length > 0">
 					<li>
 						<span data-bind="text: maker"></span>
@@ -306,11 +306,11 @@
 		</div>
 
 		<!-- Scripts here -->
-		<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
-		<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/knockout/2.3.0/knockout-min.js"></script>
-		<script type="text/javascript" src="jquery.mockjax.js"></script>
-		<script type="text/javascript" src="ajax-mocks.js"></script>
-		<script type="text/javascript" src="jquery.cascadingdropdown.js"></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.2/jquery.js"></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/knockout/2.3.0/knockout-min.js"></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mockjax/1.6.1/jquery.mockjax.min.js"></script>
+		<script type="text/javascript" src="res/ajax-mocks.js"></script>
+		<script type="text/javascript" src="dist/jquery.cascadingdropdown.min.js"></script>
 		<script type="text/javascript">
 			function viewmodel() {
 				this.phones = ko.observableArray([]);
