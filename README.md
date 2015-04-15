@@ -6,10 +6,14 @@ A simple and lighweight jQuery plugin for creating cascading dropdowns.
 
 ## Installation
 
+```
+bower install --save jquery-cascading-dropdown
+```
+
 Include script after the jQuery library (unless you are packaging scripts somehow else):
 
 ```html
-<script type="text/javascript" src="/path/to/jquery-cascading-dropdown.js"></script>
+<script type="text/javascript" src="/path/to/jquery.cascadingdropdown.js"></script>
 ```
 
 ## Options
