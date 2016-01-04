@@ -14,8 +14,7 @@
 
     var defaultOptions = {
         usePost: false,
-        useJson: false,
-        selectBoxes: []
+        useJson: false
     };
 
     // Constructor
@@ -45,6 +44,18 @@
                 });
             }
 
+            if(typeof self.options.onEnable === 'function') {
+                self.el.on('enabled', function(event) {
+                    self.options.onEnable.call(self, event, self.el.val());
+                });
+            }
+
+            if(typeof self.options.onDisable === 'function') {
+                self.el.on('disabled', function(event) {
+                    self.options.onDisable.call(self, event, self.el.val());
+                });
+            }
+
             if(self.requiredDropdowns) {
                 self.requiredDropdowns.change(function(event) {
                     self.update();
@@ -60,12 +71,14 @@
 
         // Enables the dropdown
         enable: function() {
-            return this.el.removeAttr('disabled').triggerHandler('enabled');
+            if(this.el.attr('disabled') === undefined) return;
+            this.el.removeAttr('disabled').triggerHandler('enabled');
         },
 
         // Disables the dropdown
         disable: function() {
-            return this.el.attr('disabled', 'disabled').triggerHandler('disabled');
+            if(this.el.attr('disabled') !== undefined) return;
+            this.el.attr('disabled', 'disabled').triggerHandler('disabled');
         },
 
         // Checks if required dropdowns have value
