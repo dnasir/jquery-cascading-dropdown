@@ -120,8 +120,32 @@ function getResolutions(screen, storage) {
 	var phones = getPhones(screen, null, storage);
 
 	var resolutions = $.map(phones, function(phone) { return phone.resolution; });
+
 	resolutions.sort(asc);
 	return arrayUnique(resolutions);
+}
+
+function getGroupedResolutions(screen, storage) {
+	var phones = getPhones(screen, null, storage);
+
+	// Create SD and HD resolution groups
+	// SD <= 540
+	// HD >= 720
+	var groupedResolutions = {'SD': [], 'HD': []};
+	$.each(phones, function(index, item) {
+		if (item.resolution <= 540) {
+			groupedResolutions.SD.push(item.resolution);
+		} else {
+			groupedResolutions.HD.push(item.resolution);
+		}
+	});
+
+	$.each(groupedResolutions, function(key, value) {
+		value.sort(asc);
+		groupedResolutions[key] = arrayUnique(value);
+	});
+
+	return groupedResolutions;
 }
 
 function getStorages(screen, resolution) {
@@ -166,6 +190,15 @@ $.mockjax({
 	responseTime: 1000,
 	response: function(settings){
 		this.responseText = JSON.stringify(getResolutions(settings.data.screen, settings.data.storage));
+	}
+});
+
+$.mockjax({
+	url: '/api/resolutionsGrouped',
+	contentType: 'application/json; charset=utf-8',
+	responseTime: 1000,
+	response: function(settings){
+		this.responseText = JSON.stringify(getGroupedResolutions(settings.data.screen, settings.data.storage));
 	}
 });
 
