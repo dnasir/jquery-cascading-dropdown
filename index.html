@@ -364,7 +364,7 @@
 				<h4>Phone finder</h4>
 
 				<select class="step1" name="screen" multiple="multiple">
-					<option value="4" selected="selected">4.0"</option>
+					<option value="4">4.0"</option>
 					<option value="4.3">4.3"</option>
 					<option value="4.7">4.7"</option>
 					<option value="5">5.0"</option>
@@ -394,7 +394,7 @@
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/knockout/2.3.0/knockout-min.js"></script>
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mockjax/1.6.1/jquery.mockjax.min.js"></script>
 		<script type="text/javascript" src="res/ajax-mocks.js"></script>
-		<script type="text/javascript" src="dist/jquery.cascadingdropdown.min.js"></script>
+		<script type="text/javascript" src="src/jquery.cascadingdropdown.js"></script>
 		<script type="text/javascript">
 			function viewmodel() {
 				this.phones = ko.observableArray([]);
@@ -554,7 +554,11 @@
 			$('#example4').cascadingDropdown({
 				selectBoxes: [
 					{
-						selector: '.step1'
+						selector: '.step1',
+                        selected: [1, 2],
+                        onChange: function(e, selected) {
+                            console.log(selected)
+                        }
 					},
 					{
 						selector: '.step2',
