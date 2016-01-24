@@ -215,13 +215,13 @@
                 return;
             }
 
-            var selected;
+            var selected = [];
 
             // Add all items as dropdown item
             var getOption = function(item) {
               var selectedAttr = '';
               if(item.selected) {
-                selected = item;
+                selected.push(item.value.toString());
               }
 
               return '<option value="' + item.value + '"' + selectedAttr + '>' + item.label + '</option>';
@@ -248,7 +248,7 @@
             self.enable();
 
             // If a selected item exists, set it as default
-            selected && self.setSelected(selected.value.toString());
+            selected.length && self.setSelected(selected);
 
             self._triggerReady();
         },
@@ -273,19 +273,43 @@
             if(typeof triggerChange === 'undefined') {
                 triggerChange = true;
             }
-
-            // If given value is a string, get the index where it appears in the dropdown
-            if(typeof indexOrValue === 'string') {
-                indexOrValue = dropdownItems.index(dropdownItems.filter(function() { return this.value === indexOrValue; })[0]);
+            
+            var selectedItems = [];
+            
+            // check if indexOrValue is an array
+            if($.isArray(indexOrValue)) {
+                selectedItems = indexOrValue;
+            } else {
+                selectedItems = selectedItems.concat(indexOrValue);
             }
 
-            // If index is undefined or out of bounds, do nothing
-            if(indexOrValue === undefined || indexOrValue < 0 || indexOrValue > dropdownItems.length) {
-                return;
-            }
+            var selectedValue;
+            if(self.el.is('[multiple]')) {
+                selectedValue = selectedItems.map(function(item) {
+                    if(typeof item === 'number'
+                        && (item !== undefined 
+                        && item > -1 
+                        && item < dropdownItems.length)) {
+                        return dropdownItems[item].value
+                    }
+                    
+                    return item;
+                });
 
+            } else {
+                selectedValue = selectedItems[0];
+
+                // if selected item is a number, get the value for the item at that index
+                if(typeof selectedItems[0] === 'number' 
+                    && (selectedItems[0] !== undefined 
+                    && selectedItems[0] > -1 
+                    && selectedItems[0] < dropdownItems.length)) {
+                    selectedValue = dropdownItems[selectedItems[0]].value;
+                }
+            }
+            
             // Set the dropdown item
-            self.el[0].selectedIndex = indexOrValue;
+            self.el.val(selectedValue);
 
             // Trigger change event
             if(triggerChange) {
