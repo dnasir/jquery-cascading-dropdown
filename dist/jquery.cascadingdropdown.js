@@ -310,7 +310,7 @@
 
             // Instance array
             self.dropdowns = [];
-
+            
             var dropdowns = $($.map(self.options.selectBoxes, function(item) {
                 return item.selector;
             }).join(','), self.el);
@@ -327,7 +327,7 @@
             function changeEventHandler(event) {
                 self.options.onChange.call(self, event, self.getValues());
             }
-
+            
             if(typeof self.options.onReady === 'function') {
                 dropdowns.bind('ready', readyEventHandler);
             }

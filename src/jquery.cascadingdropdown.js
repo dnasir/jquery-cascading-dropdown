@@ -207,10 +207,10 @@
             var self = this;
 
             // Remove all dropdown items and restore to initial state
-            self.el.children('option').remove();
+            self.el.find('option, optgroup').remove();
             self.el.append(self.originalDropdownItems);
 
-            if(!items || !items.length) {
+            if(!items) {
                 self._triggerReady();
                 return;
             }
@@ -218,14 +218,31 @@
             var selected;
 
             // Add all items as dropdown item
-            $.each(items, function(index, item) {
-                var selectedAttr = '';
-                if(item.selected) {
-                    selected = item;
-                }
+            var getOption = function(item) {
+              var selectedAttr = '';
+              if(item.selected) {
+                selected = item;
+              }
 
-                self.el.append('<option value="' + item.value + '"' + selectedAttr + '>' + item.label + '</option>');
-            });
+              return '<option value="' + item.value + '"' + selectedAttr + '>' + item.label + '</option>';
+            };
+
+            if ($.isArray(items)) {
+              $.each(items, function(index, item) {
+                self.el.append(getOption(item));
+              });
+            } else {
+              $.each(items, function(key, value) {
+                var itemData = [];
+                itemData.push('<optgroup label="' + key + '">');
+                for (var i = 0; i < value.length; i++) {
+                  var item = value[i];
+                  itemData.push(getOption(item));
+                }
+                itemData.push('</optgroup>');
+                self.el.append(itemData.join(''));
+              });
+            }
 
             // Enable the dropdown
             self.enable();
