@@ -6,7 +6,11 @@
     "Dzulqarnain Nasir <dzul1983@gmail.com>"
   ],
   "description": "A simple and lighweight jQuery plugin for creating cascading dropdowns.",
-  "main": "dist/jquery.cascadingdropdown.js",
+  "main": [
+      "dist/jquery.cascadingdropdown.js",
+      "dist/jquery.cascadingdropdown.min.js",
+      "dist/jquery.cascadingdropdown.min.js.map"
+  ],
   "keywords": [
     "jquery",
     "cascading",
