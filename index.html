@@ -273,6 +273,90 @@
 
 			<br />
 
+			<h4>Option Group</h4>
+			<p>This example demonstrates the plugin's capability to combine both standard and grouped (option group) dropdowns.</p>
+
+			<div id="example5" class="bs-docs-example">
+				<h4>Phone finder</h4>
+
+				<select class="step1" name="screen">
+					<option value="">Screen size</option>
+					<option value="4" selected="selected">4.0"</option>
+					<option value="4.3">4.3"</option>
+					<option value="4.7">4.7"</option>
+					<option value="5">5.0"</option>
+				</select>
+				<select class="step2" name="resolution">
+					<option value="">Screen resolution</option>
+				</select>
+				<select class="step3" name="storage">
+					<option value="">Storage size</option>
+				</select>
+
+				<h4>Matches <img src="ajax-loader.gif" data-bind="visible: loading" /></h4>
+				<ul data-bind="foreach: phones, visible: phones().length > 0">
+					<li>
+						<span data-bind="text: maker"></span>
+						<span data-bind="text: model"></span>
+					</li>
+				</ul>
+				<p data-bind="visible: phones().length == 0">No matches</p>
+			</div>
+
+			<h6>Code</h6>
+			<div>
+				<pre class="brush: js">$('#example5').cascadingDropdown({
+	selectBoxes: [
+	{
+		selector: '.step1'
+	},
+	{
+		selector: '.step2',
+		source: function(request, response) {
+			$.getJSON('/api/resolutionsGrouped', request, function(data) {
+				var newData = {};
+				$.each(data, function(key, value) {
+					newData[key] = $.map(value, function(item, index) {
+						return {
+							label: item + 'p',
+							value: item
+						};
+					});
+				});
+
+				response(newData);
+			});
+		}
+	},
+	{
+		selector: '.step3',
+		requires: ['.step1', '.step2'],
+		requireAll: true,
+		source: function(request, response) {
+			$.getJSON('/api/storages', request, function(data) {
+				response($.map(data, function(item, index) {
+					return {
+						label: item + ' GB',
+						value: item,
+						selected: index == 0 // set to true to mark it as the selected item
+					};
+				}));
+			});
+		}
+	}
+	],
+	onChange: function(event, dropdownData) {
+		// do stuff
+		// dropdownData is an object with values from all the dropdowns in this group
+	},
+	onReady: function(event, dropdownData) {
+		// do stuff
+	}
+});</pre>
+			</div>
+
+			<br />
+
 			<h4>Multiple select</h4>
 			<p>You can enable multiple select by including the <code>multiple</code> attribute. The value for the dropdown will then be an array of strings instead of a string. However, you will need to ensure that your backend service supports this type of data.</p>
 
@@ -321,11 +405,13 @@
 				example2 = new viewmodel(),
 				example3 = new viewmodel(),
 				example4 = new viewmodel();
+				example5 = new viewmodel();
 
 			ko.applyBindings(example1, document.getElementById('example1'));
 			ko.applyBindings(example2, document.getElementById('example2'));
 			ko.applyBindings(example3, document.getElementById('example3'));
 			ko.applyBindings(example4, document.getElementById('example4'));
+			ko.applyBindings(example5, document.getElementById('example5'));
 
 			// Example 1
 			$('#example1').cascadingDropdown({
@@ -356,7 +442,7 @@
 					}
 				]
 			});
-			
+
 			// Example 2
 			$('#example2').cascadingDropdown({
 				selectBoxes: [
@@ -410,7 +496,7 @@
 					}
 				]
 			});
-			
+
 			// Example 3
 			$('#example3').cascadingDropdown({
 				selectBoxes: [
@@ -513,6 +599,63 @@
 					$.getJSON('/api/phones', dropdownData, function(data) {
 						example4.phones(data);
 						example4.loading(false);
+					});
+				}
+			});
+
+			// Example 5
+			$('#example5').cascadingDropdown({
+				selectBoxes: [
+				{
+					selector: '.step1'
+				},
+				{
+					selector: '.step2',
+					source: function(request, response) {
+						$.getJSON('/api/resolutionsGrouped', request, function(data) {
+							var newData = {};
+							$.each(data, function(key, value) {
+								newData[key] = $.map(value, function(item, index) {
+									return {
+										label: item + 'p',
+										value: item
+									};
+								});
+							});
+
+							response(newData);
+						});
+					}
+				},
+				{
+					selector: '.step3',
+					requires: ['.step1', '.step2'],
+					requireAll: true,
+					source: function(request, response) {
+						$.getJSON('/api/storages', request, function(data) {
+							response($.map(data, function(item, index) {
+								return {
+									label: item + ' GB',
+									value: item,
+									selected: index == 0 // set to true to mark it as the selected item
+								};
+							}));
+						});
+					}
+				}
+				],
+				onChange: function(event, dropdownData) {
+					example5.loading(true);
+					$.getJSON('/api/phones', dropdownData, function(data) {
+						example5.phones(data);
+						example5.loading(false);
+					});
+				},
+				onReady: function(event, dropdownData) {
+					example5.loading(true);
+					$.getJSON('/api/phones', dropdownData, function(data) {
+						example5.phones(data);
+						example5.loading(false);
 					});
 				}
 			});
