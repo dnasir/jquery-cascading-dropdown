@@ -1,14 +1,4 @@
-/*! 
- *   jQuery Cascading Dropdown Plugin 1.2.6
- *   https://github.com/dnasir/jquery-cascading-dropdown
- *
- *   Copyright 2015, Dzulqarnain Nasir
- *   http://dnasir.com
- *
- *   Licensed under the MIT license:
- *   http://www.opensource.org/licenses/MIT
- */
-
+/*! jquery-cascading-dropdown 1.2.7 | (c) 2016 Dzulqarnain Nasir <dzul1983@gmail.com> | MIT */
 (function ($, undefined) {
     'use strict';
 
@@ -34,6 +24,8 @@
 
             self.pending = 0;
             self.initialised = false;
+            self.initialState = self.el.clone(true);
+            self.el.data('plugin_cascadingDropdown', this);
             self.originalDropdownItems = self.el.children('option');
 
             // Init event handlers
@@ -67,6 +59,11 @@
 
             // Call update
             self.update();
+        },
+        
+        // Destroys the instance and reverts everything back to initial state
+        _destroy: function() {
+            this.el.replaceWith(this.initialState).removeData('plugin_cascadingDropdown');
         },
 
         // Enables the dropdown
@@ -365,15 +362,22 @@
                 // Create the instance
                 var instance = new Dropdown(this, self);
 
-                // Assign it to the element as a data property
-                $(this.selector, self.el).data('plugin_cascadingDropdown', instance);
-
                 // Insert it into the dropdown instance array
                 self.dropdowns.push(instance);
 
                 // Call the create method
                 instance._create();
             });
+        },
+        
+        // Destroys the instance and reverts everything back to its initial state 
+        destroy: function() {
+            $.each(this.dropdowns, function(index, item){
+                item._destroy();
+            });
+            this.el.removeData('plugin_cascadingDropdown');
+            
+            return this.el;
         },
 
         // Fetches the values from all dropdowns in this group
