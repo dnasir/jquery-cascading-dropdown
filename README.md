@@ -16,6 +16,23 @@ Include script after the jQuery library (unless you are packaging scripts someho
 <script type="text/javascript" src="/path/to/jquery.cascadingdropdown.js"></script>
 ```
 
+## Usage
+
+To initialize the plugin, simply attach it to the parent group of dropdown elements.
+
+```html
+<div id="dropdowns">
+    <select class="step" name="typeId">
+        <option value="">Select type</option>
+    </select>
+    ...
+</div>
+```
+
+```javascript
+$('#dropdowns').cascadingDropdown(options);
+```
+
 ## Options
 
 #### usePost (boolean)
@@ -200,7 +217,9 @@ Event handler triggered when the dropdown value is changed. The event handler is
 
 Destroys the instance and reverts everything back to their initial state.
 
-    $('#dropdown').cascadingDropdown('destroy');
+```javascript
+$('#dropdown').cascadingDropdown('destroy');
+```
 
 <sub>Added: 1.2.7</sub>
 
