@@ -8,13 +8,13 @@ var pkg = require('./package.json');
 var year = new Date().getFullYear();
 var banner = '/*! <%= pkg.name %> <%= pkg.version %> | (c) ' + year + ' <%= pkg.author %> | <%= pkg.license %> */\n';
 
-gulp.task('js', function() {
+gulp.task('js', function () {
     gulp.src('src/jquery.cascadingdropdown.js')
         .pipe(header(banner, { pkg: pkg }))
         .pipe(gulp.dest('dist/'))
         .pipe(rename('jquery.cascadingdropdown.min.js'))
         .pipe(sourcemaps.init())
-        .pipe(uglify({ preserveComments: 'license' }))        
+        .pipe(uglify({ preserveComments: 'license' }))
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('dist/'));
 });
