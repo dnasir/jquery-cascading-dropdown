@@ -11,7 +11,9 @@
         // Get the selected value from data-selected-value attribute of the element
         if (!options.selected) {
             var value = $(options.selector).data('selected-value');
-            options.selected = value ? value.toString() : options.selected;
+            if (value){
+                options.selected = value.toString() 
+            }
         }
         
         this.el = $(options.selector, parent.el);
