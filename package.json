@@ -1,6 +1,6 @@
 {
   "name": "jquery-cascading-dropdown",
-  "version": "1.2.7",
+  "version": "1.2.8",
   "description": "A simple and lighweight jQuery plugin for creating cascading dropdowns.",
   "main": "dist/jquery.cascadingdropdown.js",
   "scripts": {
@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/dnasir/jquery-cascading-dropdown",
   "dependencies": {
-    "jquery": "^1.11.2"
+    "jquery": "^1.12.0"
   },
   "devDependencies": {
     "gulp": "^3.9.1",
