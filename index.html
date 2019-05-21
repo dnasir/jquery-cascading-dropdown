@@ -1,71 +1,775 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>jQuery Cascading Dropdown by dnasir</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>jQuery Cascading Dropdown Plugin Examples</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width" />
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+    <!-- Stylesheets here -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.0/css/bootstrap.min.css"
+    />
+    <style type="text/css">
+      .bs-docs-example {
+        position: relative;
+        margin: 15px 0;
+        padding: 39px 19px 14px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+      }
+
+      .bs-docs-example:after {
+        content: 'Example';
+        position: absolute;
+        top: -1px;
+        left: -1px;
+        padding: 3px 7px;
+        font-size: 12px;
+        font-weight: bold;
+        background-color: #f5f5f5;
+        border: 1px solid #ddd;
+        color: #9da0a4;
+        -webkit-border-radius: 4px 0 4px 0;
+        -moz-border-radius: 4px 0 4px 0;
+        border-radius: 4px 0 4px 0;
+      }
+
+      .cascading-dropdown-loading {
+        cursor: wait;
+        background: url('res/ajax-loader.gif') 85% center no-repeat transparent;
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="http://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/styles/shCore.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="http://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/styles/shThemeDefault.css"
+    />
   </head>
   <body>
-    <div class="wrapper">
-      <header>
-        <h1>jQuery Cascading Dropdown</h1>
-        <p>A simple and lighweight jQuery plugin for cascading dropdown.</p>
+    <div class="container">
+      <div class="page-header">
+        <h1>jQuery Cascading Dropdown <small>Examples</small></h1>
+      </div>
 
-        <p class="view"><a href="https://github.com/dnasir/jquery-cascading-dropdown">View the Project on GitHub <small>dnasir/jquery-cascading-dropdown</small></a></p>
+      <h4>Basic</h4>
+      <p>
+        This is a basic dropdown setup where the second dropdown is dependent on
+        the first dropdown having a value, and the third dropdown is dependent
+        on either the first or second one having a value.
+      </p>
 
+      <p>
+        This example also shows how you can set the selected dropdown item when
+        you initialise the plugin. This can be done either in code, or by
+        including the HTML selected attribute on the targeted dropdown item.
+      </p>
 
-        <ul>
-          <li><a href="https://github.com/dnasir/jquery-cascading-dropdown/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/dnasir/jquery-cascading-dropdown/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/dnasir/jquery-cascading-dropdown">View On <strong>GitHub</strong></a></li>
+      <div id="example1" class="bs-docs-example">
+        <h4>Phone finder</h4>
+
+        <select class="step1" name="screen">
+          <option value="">Screen size</option>
+          <option value="4">4.0"</option>
+          <option value="4.3">4.3"</option>
+          <option value="4.7">4.7"</option>
+          <option value="5">5.0"</option>
+        </select>
+        <select class="step2" name="resolution">
+          <option value="">Screen resolution</option>
+          <option value="540" selected>540p</option>
+          <option value="720">720p</option>
+          <option value="1080">1080p</option>
+        </select>
+        <select class="step3" name="storage">
+          <option value="">Storage size</option>
+          <option value="8">8 GB</option>
+          <option value="16">16 GB</option>
+          <option value="32">32 GB</option>
+          <option value="64">64 GB</option>
+        </select>
+
+        <h4>
+          Matches <img src="res/ajax-loader.gif" data-bind="visible: loading" />
+        </h4>
+        <ul data-bind="foreach: phones, visible: phones().length > 0">
+          <li>
+            <span data-bind="text: maker"></span>
+            <span data-bind="text: model"></span>
+          </li>
         </ul>
-      </header>
-      <section>
-        <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+        <p data-bind="visible: phones().length == 0">No matches</p>
+      </div>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+      <h6>Code</h6>
+      <div>
+        <pre class="brush: js">
+$('#example1').cascadingDropdown({
+	selectBoxes: [
+		{
+			selector: '.step1',
+			selected: '4.3'
+		},
+		{
+			selector: '.step2',
+			requires: ['.step1']
+		},
+		{
+			selector: '.step3',
+			requires: ['.step1', '.step2'],
+			onChange: function(event, value, requiredValues) {
+				// do stuff
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
+				// event is the change event object for the current dropdown
+				// value is the current dropdown value
+				// requiredValues is an object with required dropdown values
+				// requirementsMet is a boolean value to indicate if all requirements (including current dropdown having a value) have been met
+			}
+		}
+	]
+});</pre
+        >
+      </div>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+      <br />
 
-<h3>
-<a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
+      <h4>Dynamic</h4>
+      <p>
+        This example shows how you can create a completely dynamic group of
+        dropdowns. Dropdowns with dependencies will react based on the rules
+        given, and fetch its own list from the server via Ajax.
+      </p>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+      <p>
+        You can provide an array of strings or objects, or a function as the
+        dropdown data source.
+      </p>
 
-<h3>
-<a name="rather-drive-stick" class="anchor" href="#rather-drive-stick"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
+      <p>
+        This example also demonstrates how you can set the selected item for a
+        dropdown in the source option. For example, you can have it select an
+        item when it is the only item available. The plugin will select that
+        item and trigger the change event.
+      </p>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+      <div id="example2" class="bs-docs-example">
+        <h4>Phone finder</h4>
 
-<h3>
-<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+        <select class="step1" name="screen">
+          <option value="">Screen size</option>
+        </select>
+        <select class="step2" name="resolution">
+          <option value="">Screen resolution</option>
+        </select>
+        <select class="step3" name="storage">
+          <option value="">Storage size</option>
+        </select>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+        <h4>
+          Matches <img src="res/ajax-loader.gif" data-bind="visible: loading" />
+        </h4>
+        <ul data-bind="foreach: phones, visible: phones().length > 0">
+          <li>
+            <span data-bind="text: maker"></span>
+            <span data-bind="text: model"></span>
+          </li>
+        </ul>
+        <p data-bind="visible: phones().length == 0">No matches</p>
+      </div>
 
-<h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
+      <h6>Code</h6>
+      <div>
+        <pre class="brush: js">
+$('#example2').cascadingDropdown({
+	selectBoxes: [
+		{
+			selector: '.step1',
+			source: [
+				{ label: '4.0"', value: 4 },
+				{ label: '4.3"', value: 4.3 },
+				{ label: '4.7"', value: 4.7 },
+				{ label: '5.0"', value: 5 }
+			]
+		},
+		{
+			selector: '.step2',
+			requires: ['.step1'],
+			source: function(request, response) {
+				$.getJSON('/api/resolutions', request, function(data) {
+					var selectOnlyOption = data.length <= 1;
+					response($.map(data, function(item, index) {
+						return {
+							label: item + 'p',
+							value: item,
+							selected: selectOnlyOption // Select if only option
+						};
+					}));
+				});
+			}
+		},
+		{
+			selector: '.step3',
+			requires: ['.step1', '.step2'],
+			requireAll: true,
+			source: function(request, response) {
+				$.getJSON('/api/storages', request, function(data) {
+					response($.map(data, function(item, index) {
+						return {
+							label: item + ' GB',
+							value: item,
+							selected: index == 0 // Select first available option
+						};
+					}));
+				});
+			},
+			onChange: function(event, value, requiredValues, requirementsMet){
+				// do stuff
+			}
+		}
+	]
+});</pre
+        >
+      </div>
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
-      </section>
-      <footer>
-        <p>This project is maintained by <a href="https://github.com/dnasir">dnasir</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-      </footer>
+      <br />
+
+      <h4>Combined</h4>
+      <p>
+        This example demonstrates the plugin's capability to combine both static
+        and dynamic dropdowns. It also demonstrates how you can set the default
+        selected dropdown item in a dynamic dropdown scenario.
+      </p>
+
+      <div id="example3" class="bs-docs-example">
+        <h4>Phone finder</h4>
+
+        <select class="step1" name="screen">
+          <option value="">Screen size</option>
+          <option value="4" selected="selected">4.0"</option>
+          <option value="4.3">4.3"</option>
+          <option value="4.7">4.7"</option>
+          <option value="5">5.0"</option>
+        </select>
+        <select class="step2" name="resolution">
+          <option value="">Screen resolution</option>
+        </select>
+        <select class="step3" name="storage">
+          <option value="">Storage size</option>
+        </select>
+
+        <h4>
+          Matches <img src="res/ajax-loader.gif" data-bind="visible: loading" />
+        </h4>
+        <ul data-bind="foreach: phones, visible: phones().length > 0">
+          <li>
+            <span data-bind="text: maker"></span>
+            <span data-bind="text: model"></span>
+          </li>
+        </ul>
+        <p data-bind="visible: phones().length == 0">No matches</p>
+      </div>
+
+      <h6>Code</h6>
+      <div>
+        <pre class="brush: js">
+$('#example3').cascadingDropdown({
+	selectBoxes: [
+		{
+			selector: '.step1'
+		},
+		{
+			selector: '.step2'
+		},
+		{
+			selector: '.step3',
+			requires: ['.step1', '.step2'],
+			requireAll: true,
+			source: function(request, response) {
+				$.getJSON('/api/storages', request, function(data) {
+					response($.map(data, function(item, index) {
+						return {
+							label: item + ' GB',
+							value: item,
+							selected: index == 0 // set to true to mark it as the selected item
+						};
+					}));
+				});
+			}
+		}
+	],
+	onChange: function(event, dropdownData) {
+		// do stuff
+		// dropdownData is an object with values from all the dropdowns in this group
+	},
+	onReady: function(event, dropdownData) {
+		// do stuff
+	}
+});</pre
+        >
+      </div>
+
+      <br />
+
+      <h4>Option Group</h4>
+      <p>
+        This example demonstrates the plugin's capability to combine both
+        standard and grouped (option group) dropdowns.
+      </p>
+
+      <div id="example5" class="bs-docs-example">
+        <h4>Phone finder</h4>
+
+        <select class="step1" name="screen">
+          <option value="">Screen size</option>
+          <option value="4" selected="selected">4.0"</option>
+          <option value="4.3">4.3"</option>
+          <option value="4.7">4.7"</option>
+          <option value="5">5.0"</option>
+        </select>
+        <select class="step2" name="resolution">
+          <option value="">Screen resolution</option>
+        </select>
+        <select class="step3" name="storage">
+          <option value="">Storage size</option>
+        </select>
+
+        <h4>
+          Matches <img src="res/ajax-loader.gif" data-bind="visible: loading" />
+        </h4>
+        <ul data-bind="foreach: phones, visible: phones().length > 0">
+          <li>
+            <span data-bind="text: maker"></span>
+            <span data-bind="text: model"></span>
+          </li>
+        </ul>
+        <p data-bind="visible: phones().length == 0">No matches</p>
+      </div>
+
+      <h6>Code</h6>
+      <div>
+        <pre class="brush: js">
+$('#example5').cascadingDropdown({
+	selectBoxes: [
+	{
+		selector: '.step1'
+	},
+	{
+		selector: '.step2',
+		source: function(request, response) {
+			$.getJSON('/api/resolutionsGrouped', request, function(data) {
+				var newData = {};
+				$.each(data, function(key, value) {
+					newData[key] = $.map(value, function(item, index) {
+						return {
+							label: item + 'p',
+							value: item
+						};
+					});
+				});
+
+				response(newData);
+			});
+		}
+	},
+	{
+		selector: '.step3',
+		requires: ['.step1', '.step2'],
+		requireAll: true,
+		source: function(request, response) {
+			$.getJSON('/api/storages', request, function(data) {
+				response($.map(data, function(item, index) {
+					return {
+						label: item + ' GB',
+						value: item,
+						selected: index == 0 // set to true to mark it as the selected item
+					};
+				}));
+			});
+		}
+	}
+	],
+	onChange: function(event, dropdownData) {
+		// do stuff
+		// dropdownData is an object with values from all the dropdowns in this group
+	},
+	onReady: function(event, dropdownData) {
+		// do stuff
+	}
+});</pre
+        >
+      </div>
+
+      <br />
+
+      <h4>Multiple select</h4>
+      <p>
+        You can enable multiple select by including the
+        <code>multiple</code> attribute. The value for the dropdown will then be
+        an array of strings instead of a string. However, you will need to
+        ensure that your backend service supports this type of data.
+      </p>
+
+      <div id="example4" class="bs-docs-example">
+        <h4>Phone finder</h4>
+
+        <select class="step1" name="screen" multiple="multiple">
+          <option value="4">4.0"</option>
+          <option value="4.3">4.3"</option>
+          <option value="4.7">4.7"</option>
+          <option value="5">5.0"</option>
+        </select>
+        <select class="step2" name="resolution" multiple="multiple"> </select>
+        <select class="step3" name="storage" multiple="multiple"> </select>
+
+        <h4>
+          Matches <img src="res/ajax-loader.gif" data-bind="visible: loading" />
+        </h4>
+        <ul data-bind="foreach: phones, visible: phones().length > 0">
+          <li>
+            <span data-bind="text: maker"></span>
+            <span data-bind="text: model"></span>
+          </li>
+        </ul>
+        <p data-bind="visible: phones().length == 0">No matches</p>
+      </div>
+
+      <br />
+
+      <p class="text-center">
+        <small
+          >Copyright &copy; 2013
+          <a href="http://dnasir.com">Dzulqarnain Nasir</a></small
+        >
+      </p>
     </div>
-    <script src="javascripts/scale.fix.js"></script>
-    
+
+    <!-- Scripts here -->
+    <script
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.2/jquery.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/knockout/2.3.0/knockout-min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mockjax/1.6.1/jquery.mockjax.min.js"
+    ></script>
+    <script type="text/javascript" src="res/ajax-mocks.js"></script>
+    <script
+      type="text/javascript"
+      src="dist/jquery.cascadingdropdown.min.js"
+    ></script>
+    <script type="text/javascript">
+      function viewmodel() {
+        this.phones = ko.observableArray([]);
+        this.loading = ko.observable(false);
+      }
+
+      var example1 = new viewmodel(),
+        example2 = new viewmodel(),
+        example3 = new viewmodel(),
+        example4 = new viewmodel();
+      example5 = new viewmodel();
+
+      ko.applyBindings(example1, document.getElementById('example1'));
+      ko.applyBindings(example2, document.getElementById('example2'));
+      ko.applyBindings(example3, document.getElementById('example3'));
+      ko.applyBindings(example4, document.getElementById('example4'));
+      ko.applyBindings(example5, document.getElementById('example5'));
+
+      // Example 1
+      $('#example1').cascadingDropdown({
+        selectBoxes: [
+          {
+            selector: '.step1',
+            selected: '4.3'
+          },
+          {
+            selector: '.step2',
+            requires: ['.step1']
+          },
+          {
+            selector: '.step3',
+            requires: ['.step1', '.step2'],
+            onChange: function(event, value, requiredValues, requirementsMet) {
+              if (!requirementsMet) return;
+
+              example1.loading(true);
+
+              var ajaxData = requiredValues;
+              ajaxData[this.el.attr('name')] = value;
+              $.getJSON('/api/phones', ajaxData, function(data) {
+                example1.phones(data);
+                example1.loading(false);
+              });
+            }
+          }
+        ]
+      });
+
+      // Example 2
+      $('#example2').cascadingDropdown({
+        selectBoxes: [
+          {
+            selector: '.step1',
+            source: [
+              { label: '4.0"', value: 4 },
+              { label: '4.3"', value: 4.3 },
+              { label: '4.7"', value: 4.7 },
+              { label: '5.0"', value: 5 }
+            ]
+          },
+          {
+            selector: '.step2',
+            requires: ['.step1'],
+            source: function(request, response) {
+              $.getJSON('/api/resolutions', request, function(data) {
+                var selectOnlyOption = data.length <= 1;
+                response(
+                  $.map(data, function(item, index) {
+                    return {
+                      label: item + 'p',
+                      value: item,
+                      selected: selectOnlyOption
+                    };
+                  })
+                );
+              });
+            }
+          },
+          {
+            selector: '.step3',
+            requires: ['.step1', '.step2'],
+            requireAll: true,
+            source: function(request, response) {
+              $.getJSON('/api/storages', request, function(data) {
+                response(
+                  $.map(data, function(item, index) {
+                    return {
+                      label: item + ' GB',
+                      value: item,
+                      selected: index == 0
+                    };
+                  })
+                );
+              });
+            },
+            onChange: function(event, value, requiredValues, requirementsMet) {
+              if (!requirementsMet) return;
+
+              example2.loading(true);
+
+              var ajaxData = requiredValues;
+              ajaxData[this.el.attr('name')] = value;
+              $.getJSON('/api/phones', ajaxData, function(data) {
+                example2.phones(data);
+                example2.loading(false);
+              });
+            }
+          }
+        ]
+      });
+
+      // Example 3
+      $('#example3').cascadingDropdown({
+        selectBoxes: [
+          {
+            selector: '.step1'
+          },
+          {
+            selector: '.step2',
+            source: function(request, response) {
+              $.getJSON('/api/resolutions', request, function(data) {
+                response(
+                  $.map(data, function(item, index) {
+                    return {
+                      label: item + 'p',
+                      value: item,
+                      selected: index == 0
+                    };
+                  })
+                );
+              });
+            }
+          },
+          {
+            selector: '.step3',
+            requires: ['.step1', '.step2'],
+            requireAll: true,
+            source: function(request, response) {
+              $.getJSON('/api/storages', request, function(data) {
+                response(
+                  $.map(data, function(item, index) {
+                    return {
+                      label: item + ' GB',
+                      value: item,
+                      selected: index == 0
+                    };
+                  })
+                );
+              });
+            }
+          }
+        ],
+        onChange: function(event, dropdownData) {
+          example3.loading(true);
+          $.getJSON('/api/phones', dropdownData, function(data) {
+            example3.phones(data);
+            example3.loading(false);
+          });
+        },
+        onReady: function(event, dropdownData) {
+          example3.loading(true);
+          $.getJSON('/api/phones', dropdownData, function(data) {
+            example3.phones(data);
+            example3.loading(false);
+          });
+        }
+      });
+
+      // Example 4
+      $('#example4').cascadingDropdown({
+        selectBoxes: [
+          {
+            selector: '.step1',
+            selected: [1, 2],
+            onChange: function(e, selected) {
+              console.log(selected);
+            }
+          },
+          {
+            selector: '.step2',
+            source: function(request, response) {
+              $.getJSON('/api/resolutions', request, function(data) {
+                response(
+                  $.map(data, function(item, index) {
+                    return {
+                      label: item + 'p',
+                      value: item,
+                      selected: index == 0
+                    };
+                  })
+                );
+              });
+            }
+          },
+          {
+            selector: '.step3',
+            requires: ['.step1', '.step2'],
+            requireAll: true,
+            source: function(request, response) {
+              $.getJSON('/api/storages', request, function(data) {
+                response(
+                  $.map(data, function(item, index) {
+                    return {
+                      label: item + ' GB',
+                      value: item,
+                      selected: index == 0
+                    };
+                  })
+                );
+              });
+            }
+          }
+        ],
+        onChange: function(event, dropdownData) {
+          example4.loading(true);
+          $.getJSON('/api/phones', dropdownData, function(data) {
+            example4.phones(data);
+            example4.loading(false);
+          });
+        },
+        onReady: function(event, dropdownData) {
+          example4.loading(true);
+          $.getJSON('/api/phones', dropdownData, function(data) {
+            example4.phones(data);
+            example4.loading(false);
+          });
+        }
+      });
+
+      // Example 5
+      $('#example5').cascadingDropdown({
+        selectBoxes: [
+          {
+            selector: '.step1'
+          },
+          {
+            selector: '.step2',
+            source: function(request, response) {
+              $.getJSON('/api/resolutionsGrouped', request, function(data) {
+                var newData = {};
+                $.each(data, function(key, value) {
+                  newData[key] = $.map(value, function(item, index) {
+                    return {
+                      label: item + 'p',
+                      value: item
+                    };
+                  });
+                });
+
+                response(newData);
+              });
+            }
+          },
+          {
+            selector: '.step3',
+            requires: ['.step1', '.step2'],
+            requireAll: true,
+            source: function(request, response) {
+              $.getJSON('/api/storages', request, function(data) {
+                response(
+                  $.map(data, function(item, index) {
+                    return {
+                      label: item + ' GB',
+                      value: item,
+                      selected: index == 0 // set to true to mark it as the selected item
+                    };
+                  })
+                );
+              });
+            }
+          }
+        ],
+        onChange: function(event, dropdownData) {
+          example5.loading(true);
+          $.getJSON('/api/phones', dropdownData, function(data) {
+            example5.phones(data);
+            example5.loading(false);
+          });
+        },
+        onReady: function(event, dropdownData) {
+          example5.loading(true);
+          $.getJSON('/api/phones', dropdownData, function(data) {
+            example5.phones(data);
+            example5.loading(false);
+          });
+        }
+      });
+    </script>
+    <script
+      type="text/javascript"
+      src="http://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/scripts/shCore.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="http://cdnjs.cloudflare.com/ajax/libs/SyntaxHighlighter/3.0.83/scripts/shBrushJScript.js"
+    ></script>
+    <script type="text/javascript">
+      SyntaxHighlighter.all();
+    </script>
   </body>
 </html>
