@@ -2,10 +2,12 @@
   "name": "jquery-cascading-dropdown",
   "version": "1.2.7",
   "description": "A simple and lighweight jQuery plugin for creating cascading dropdowns.",
-  "main": "dist/jquery.cascadingdropdown.js",
+  "main": "dist/jquery.cascadingdropdown.min.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "gulp"
+    "build": "gulp",
+    "dev": "gulp dev",
+    "example": "gulp webserver"
   },
   "repository": {
     "type": "git",
@@ -23,13 +25,14 @@
   },
   "homepage": "https://github.com/dnasir/jquery-cascading-dropdown",
   "dependencies": {
-    "jquery": "^1.11.2"
+    "jquery": "^3.4.1"
   },
   "devDependencies": {
-    "gulp": "^3.9.1",
-    "gulp-uglify": "^1.5.3",
-    "gulp-header": "^1.7.1",
-    "gulp-sourcemaps": "^1.6.0",
-    "gulp-rename": "^1.2.2"
+    "gulp": "^4.0.2",
+    "gulp-connect": "^5.7.0",
+    "gulp-header": "^2.0.7",
+    "gulp-rename": "^1.2.2",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-uglify": "^3.0.2"
   }
 }
