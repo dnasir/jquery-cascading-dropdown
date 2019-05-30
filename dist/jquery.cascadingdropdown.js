@@ -1,4 +1,4 @@
-/*! jquery-cascading-dropdown 1.2.7 | (c) 2017 Dzulqarnain Nasir <dzul1983@gmail.com> | MIT */
+/*! jquery-cascading-dropdown 1.2.8 | (c) 2019 Dzulqarnain Nasir <dzul1983@gmail.com> | MIT */
 (function ($, undefined) {
     'use strict';
 
