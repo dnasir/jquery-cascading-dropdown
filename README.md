@@ -7,7 +7,7 @@ A simple and lighweight jQuery plugin for creating cascading dropdowns.
 ## Installation
 
 ```
-bower install --save jquery-cascading-dropdown
+npm install --save jquery-cascading-dropdown
 ```
 
 Include script after the jQuery library (unless you are packaging scripts somehow else):
@@ -226,5 +226,20 @@ $('#dropdown').cascadingDropdown('destroy');
 ## Server-side implementation
 
 By default, this plugin expects the web service to return a JSON object containing an array of objects with properties 'label' and 'value'. The web service may also include a 'selected' property for an object within an array to indicate that that particular object is to be the selected item.
+
+```json
+// Example server response
+[
+    {
+        "label": "Item 1",
+        "value": "1"
+    },
+    {
+        "label": "Item 2",
+        "value": "2",
+        "selected": true
+    }
+]
+```
 
 If the value property is not defined, the dropdown item will set the label as the value, and vice versa.
