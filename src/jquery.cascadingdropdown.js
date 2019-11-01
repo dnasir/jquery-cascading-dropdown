@@ -213,19 +213,10 @@
 
             var selected = [];
 
-            // Add all items as dropdown item
-            var getOption = function(item) {
-              var selectedAttr = '';
-              if(item.selected) {
-                selected.push(item.value.toString());
-              }
-
-              return '<option value="' + item.value + '"' + selectedAttr + '>' + item.label + '</option>';
-            };
-
             if ($.isArray(items)) {
               $.each(items, function(index, item) {
-                self.el.append(getOption(item));
+                self.el.append(self._renderItem(item));
+                if (item.selected) selected.push(item.value.toString());
               });
             } else {
               $.each(items, function(key, value) {
@@ -233,7 +224,8 @@
                 itemData.push('<optgroup label="' + key + '">');
                 for (var i = 0; i < value.length; i++) {
                   var item = value[i];
-                  itemData.push(getOption(item));
+                  itemData.push(self._renderItem(item));
+                  if (item.selected) selected.push(item.value.toString());
                 }
                 itemData.push('</optgroup>');
                 self.el.append(itemData.join(''));
@@ -247,6 +239,10 @@
             selected.length && self.setSelected(selected);
 
             self._triggerReady();
+        },
+
+        _renderItem: function(item) {
+            return '<option value="' + item.value + '"' + (item.selected ? ' selected' : '') + '>' + item.label + '</option>';
         },
 
         // Trigger the ready event when instance is initialised for the first time
