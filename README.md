@@ -1,3 +1,5 @@
+> **No longer maintained**
+
 # jQuery Cascading Dropdown Plugin
 
 A simple and lighweight jQuery plugin for creating cascading dropdowns.
